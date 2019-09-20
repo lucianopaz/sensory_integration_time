@@ -1,0 +1,9 @@
+include *.txt
+include README.md
+include LICENCE
+recursive-include . *.f90 *.py *.c *.h Makefile
+recursive-exclude fits *
+recursive-exclude build *
+recursive-exclude lib *
+recursive-exclude figs *
+recursive-exclude *.egg* *
