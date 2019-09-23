@@ -1,0 +1,8 @@
+matplotlib>=2
+numpy>=1.13
+sympy>=1.1.1
+scipy>=1
+six
+pandas>=0.21
+cma>=2.5
+mpmath>=1

@@ -37,7 +37,7 @@ else
         BUILD = mac_build
         FFLAGS += -D OSX
         LIBS = libincgamNEG.dylib libincgamNEG.a
-        SHARED_LIB = libincgamNEG.so
+        SHARED_LIB = libincgamNEG.dylib
         STATIC_LIB = libincgamNEG.a
     endif
     UNAME_P := $(shell uname -p)
