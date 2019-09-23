@@ -1,4 +1,6 @@
 # `sensory_integration_time`
+[![Build Status](https://dev.azure.com/lucianopazneuro/lucianopazneuro/_apis/build/status/lucianopaz.sensory_integration_time?branchName=master)](https://dev.azure.com/lucianopazneuro/lucianopazneuro/_build/latest?definitionId=3&branchName=master)
+
 This package constains the source code used to fit the leaky integration model for tactile perception used in the Toso et al (submitted).
 
 ## Installation
