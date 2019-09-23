@@ -28,21 +28,21 @@ steps:
   displayName: 'Use Python $(python.version)'
 
 - bash: echo "##vso[task.prependpath]$CONDA/bin"
-  displayName: Add conda to PATH
+  displayName: 'Add conda to PATH on unix'
   condition: ne(variables.imageName, 'windows-latest')
 
 # On Hosted macOS, the agent user doesn't have ownership of Miniconda's installation directory/
 # We need to take ownership if we want to update conda or install packages globally
 - bash: sudo chown -R $USER $CONDA
-  displayName: Take ownership of conda installation
+  displayName: 'Take ownership of conda installation'
   condition: eq(variables.imageName, 'macos-latest')
 
 - powershell: Write-Host "##vso[task.prependpath]$env:CONDA\Scripts"
-  displayName: Add conda to PATH on windows
+  displayName: 'Add conda to PATH on windows'
   condition: eq(variables.imageName, 'windows-latest')
 
-- script: conda env create --quiet -n "test_env"
-  displayName: Create Anaconda environment
+- script: conda create --quiet --name test_env
+  displayName: 'Create Anaconda environment'
 
 - bash: |
     ./scripts/install.sh -n test_env
