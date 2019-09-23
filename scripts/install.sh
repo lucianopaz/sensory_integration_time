@@ -104,28 +104,25 @@ then
   echo -e "$DEACTIVATION" >> $TARGET_ENV_DIR/etc/conda/deactivate.d/env_vars.sh
 fi
 
-# Activate environment
-if [[ $TARGET_ENV != $CONDA_DEFAULT_ENV ]]
-then
-  echo "Activating target environment $TARGET_ENV"
-  set +x
-  eval "$(conda shell.bash hook)"
-  conda activate $TARGET_ENV
-fi
-set -x
-
 # conda install requirements
-conda install -y make gsl pip
+conda install -y -n $TARGET_ENV make gsl pip gcc
 
 # Platform dependent installs
 # Ugly hack because we are not using conda build
 if [[ $OS == Linux ]]
 then
-  conda install -y -c anaconda gfortran_linux-64
+  conda install -y -n $TARGET_ENV -c anaconda gfortran_linux-64
 elif [[ $OS == Darwin ]]
 then
-   conda install -y -c conda-forge gfortran_osx-64 
+   conda install -y -n $TARGET_ENV -c conda-forge gfortran_osx-64
 fi
+
+# Activate environment
+echo "Activating target environment $TARGET_ENV"
+set +x
+eval "$(conda shell.bash hook)"
+conda activate $TARGET_ENV
+set -x
 
 # Make the fortran shared library
 cd $DIR/../leakyIntegrator/src

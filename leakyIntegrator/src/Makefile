@@ -36,8 +36,8 @@ else
     ifeq ($(UNAME_S),Darwin)
         BUILD = mac_build
         FFLAGS += -D OSX
-        LIBS = libincgamNEG.dylib libincgamNEG.a
-        SHARED_LIB = libincgamNEG.dylib
+        LIBS = libincgamNEG.so libincgamNEG.a
+        SHARED_LIB = libincgamNEG.so
         STATIC_LIB = libincgamNEG.a
     endif
     UNAME_P := $(shell uname -p)

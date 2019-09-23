@@ -114,7 +114,7 @@ class specialized_build_ext(build_ext, object):
                 static_lib = "incgamNEG.*"
                 mv = "move"
             elif plat.startswith("darwin"):
-                shared_lib = "libincgamNEG.dylib"
+                shared_lib = "libincgamNEG.so"
                 static_lib = "libincgamNEG.a"
                 mv = "mv"
             else:
