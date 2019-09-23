@@ -41,7 +41,7 @@ steps:
   displayName: 'Add conda to PATH on windows'
   condition: eq(variables.imageName, 'windows-latest')
 
-- script: conda create --quiet --name test_env
+- script: conda create --yes --name test_env
   displayName: 'Create Anaconda environment'
 
 - bash: |
@@ -49,7 +49,13 @@ steps:
   displayName: 'Install dependencies and package'
   condition: succeeded()
 
-- script: |
+- bash: |
+    if [[ $(imageName) != "windows-latest" ]]
+    then
+      source activate test_env
+    else
+      call activate test_env
+    fi
     pip install pytest pytest-azurepipelines pytest-cov
     python -m pytest -xv --cov sensory_integration_time --junitxml=junit/test-results.xml --cov-report xml --cov-report term --cov-report html .
   displayName: 'pytest'
