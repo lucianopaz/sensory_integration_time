@@ -123,10 +123,10 @@ fi
 # Ugly hack because we are not using conda build
 if [[ $UNAME == Darwin ]]
 then
-  conda install -y -n $TARGET_ENV -c conda-forge gfortran_osx-64
+  conda install -y -n $TARGET_ENV -c conda-forge gfortran_osx-64 libiconv
 elif [[ $UNAME == Linux ]]
 then
-  conda install -y -n $TARGET_ENV gfortran_linux-64;
+  conda install -y -n $TARGET_ENV gfortran_linux-64
   # Horrible hack to get CI to work properly
   ln $TARGET_ENV_DIR${PATHSEP}bin${PATHSEP}x86_64-conda_*-linux-gnu-gfortran $TARGET_ENV_DIR${PATHSEP}bin${PATHSEP}gfortran;
 fi
