@@ -128,9 +128,10 @@ if [[ $UNAME == Darwin ]]
 then
   conda install -y -n $TARGET_ENV -c conda-forge gfortran_osx-64
 elif [[ $UNAME == Linux ]]
-  conda install -y -n $TARGET_ENV gfortran_linux-64
+then
+  conda install -y -n $TARGET_ENV gfortran_linux-64;
   # Horrible hack to get CI to work properly
-  ln $TARGET_ENV_DIR${PATHSEP}bin${PATHSEP}gfortran_linux-64 $TARGET_ENV_DIR${PATHSEP}bin${PATHSEP}gfortran
+  ln $TARGET_ENV_DIR${PATHSEP}bin${PATHSEP}gfortran_linux-64 $TARGET_ENV_DIR${PATHSEP}bin${PATHSEP}gfortran;
 fi
 
 # Activate environment
