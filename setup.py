@@ -20,12 +20,7 @@ from distutils.errors import DistutilsSetupError
 from distutils import log as distutils_logger
 
 
-conda_environment_path = os.environ["CONDA_PREFIX"]
-if os.path.dirname(conda_environment_path).endswith("envs"):
-    conda_environment = os.environ["CONDA_DEFAULT_ENV"]
-else:
-    conda_environment = None
-
+conda_environment = os.environ["CONDA_DEFAULT_ENV"]
 
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 REQUIREMENTS_FILE = os.path.join(PROJECT_ROOT, "requirements.txt")
@@ -131,20 +126,16 @@ class specialized_build_ext(build_ext, object):
                 source=output_lib,
                 dest=os.path.join(output_dir, output_lib),
             )
-            if conda_environment is not None:
-                if os.name == "nt":
-                    conda_activate = "activate {env} && "
-                else:
-                    conda_activate = 'conda shell.bash hook > temp_conda_hook && . temp_conda_hook && rm temp_conda_hook && conda activate {env} && '
-                distutils_logger.info(
-                    "Will attempt to conda activate the environment '{}' by executing {}".
-                    format(
-                        conda_environment, conda_activate.format(env=conda_environment)
-                    )
+            conda_activate = 'conda shell.bash hook > temp_conda_hook && . temp_conda_hook && rm temp_conda_hook && conda activate {env} && '
+            distutils_logger.info(
+                "Will attempt to conda activate the environment '{}' by executing {}".
+                format(
+                    conda_environment, conda_activate.format(env=conda_environment)
                 )
-                full_command = 'bash -c "{}"'.format(
-                    conda_activate.format(env=conda_environment) + shell_command
-                )
+            )
+            full_command = 'bash -c "{}"'.format(
+                conda_activate.format(env=conda_environment) + shell_command
+            )
 
             distutils_logger.info(
                 "Will execute the following command in with subprocess.Popen: \n{0}".format(

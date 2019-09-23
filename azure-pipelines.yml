@@ -54,7 +54,6 @@ steps:
     source activate test_env
     ./scripts/install.sh -n test_env
   displayName: 'Install dependencies and package'
-  condition: succeeded()
 
 - bash: |
     if [[ $(imageName) != "windows-latest" ]]

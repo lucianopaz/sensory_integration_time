@@ -23,8 +23,8 @@ shift $((OPTIND-1))
 
 # Get the scripts directory and the short uname
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-OS=$(uname -s)
-if [[ $OS == Darwin ]] || [[ $OS == Linux ]]
+UNAME=$(uname -s)
+if [[ $UNAME == Darwin ]] || [[ $UNAME == Linux ]]
 then
   PATHSEP=/
 else
@@ -110,13 +110,27 @@ then
 fi
 
 # conda install requirements
-conda install -y -n $TARGET_ENV make gsl pip
+conda install -y -n $TARGET_ENV gsl pip
+if [[ ! -z $OS ]]
+then
+  # On windows we need to install gnu make and gfortran using chocolatey and cygwin
+  choco install make
+  choco install cygwin --params"/InstallDir:cygwin"
+  cygwin\\cygwinsetup.exe -qnNdO -R cygwin -s "http://cygwin.mirror.constant.com" -g -P gcc-fortran
+  ln cygwin\\bin\\gfortran.exe $TARGET_ENV_DIR${PATHSEP}bin${PATHSEP}gfortran
+else
+  conda install -y -n $TARGET_ENV make
+fi
 
 # Platform dependent installs
 # Ugly hack because we are not using conda build
-if [[ $OS == Darwin ]]
+if [[ $UNAME == Darwin ]]
 then
   conda install -y -n $TARGET_ENV -c conda-forge gfortran_osx-64
+elif [[ $UNAME == Linux ]]
+  conda install -y -n $TARGET_ENV gfortran_linux-64
+  # Horrible hack to get CI to work properly
+  ln $TARGET_ENV_DIR${PATHSEP}bin${PATHSEP}gfortran_linux-64 $TARGET_ENV_DIR${PATHSEP}bin${PATHSEP}gfortran
 fi
 
 # Activate environment
@@ -127,7 +141,7 @@ conda activate $TARGET_ENV
 set -x
 
 # Make the fortran shared library
-cd $DIR${PATHSEP}".."${PATHSEP}leakyIntegrator${PATHSEP}src
+cd $DIR${PATHSEP}..${PATHSEP}leakyIntegrator${PATHSEP}src
 make shared
 
 # pip install the package
@@ -136,9 +150,9 @@ pip install --upgrade pip
 pip install -r requirements.txt
 if [[ -z $DEVELOPMENT ]]
 then
-  pip install .
+  pip install -v .
 else
-  pip install -e .
+  pip install -v -e .
 fi
 
 echo "Successfully installed package!"
