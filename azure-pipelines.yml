@@ -41,8 +41,14 @@ steps:
   displayName: 'Add conda to PATH on windows'
   condition: eq(variables.imageName, 'windows-latest')
 
-- script: conda create --yes --name test_env
+- script: |
+    conda update --yes conda
+    conda create --yes --name test_env
   displayName: 'Create Anaconda environment'
+
+- bash: sudo apt-get install gfortran
+  displayName: 'Install gfortran on ubuntu'
+  condition: eq(variables.imageName, 'ubuntu-latest')
 
 - bash: |
     source activate test_env

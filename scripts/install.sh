@@ -109,12 +109,9 @@ conda install -y -n $TARGET_ENV make gsl pip
 
 # Platform dependent installs
 # Ugly hack because we are not using conda build
-if [[ $OS == Linux ]]
+if [[ $OS == Darwin ]]
 then
-  conda install -y -n $TARGET_ENV -c anaconda gfortran_linux-64
-elif [[ $OS == Darwin ]]
-then
-   conda install -y -n $TARGET_ENV -c conda-forge gfortran_osx-64
+  conda install -y -n $TARGET_ENV -c conda-forge gfortran_osx-64
 fi
 
 # Activate environment
