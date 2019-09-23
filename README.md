@@ -1,3 +1,6 @@
+# `sensory_integration_time`
+This package constains the source code used to fit the leaky integration model for tactile perception used in the Toso et al (submitted).
+
 ## Installation
 
 This package contains some custom c extensions that require the `gfortran` compiler and some libraries. In particular it requires the GNU scientific library (GSL) be installed and available in the build environment.
