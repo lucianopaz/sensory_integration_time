@@ -1,0 +1,69 @@
+# Python package
+# Create and test a Python package on multiple Python versions.
+# Add steps that analyze code, save the dist with the build record, publish to a PyPI-compatible index, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/python
+
+trigger:
+- master
+
+strategy:
+  matrix:
+    Python37:
+      python.version: '3.7'
+      imageName: 'ubuntu-latest'
+    Python37-Windows:
+      python.version: '3.7'
+      imageName: 'windows-latest'
+    Python37-MacOS:
+      python.version: '3.7'
+      imageName: 'macos-latest'
+
+pool:
+  vmImage: $(imageName)
+
+steps:
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '$(python.version)'
+  displayName: 'Use Python $(python.version)'
+
+- bash: echo "##vso[task.prependpath]$CONDA/bin"
+  displayName: Add conda to PATH
+  condition: ne($(imageName), 'windows-latest')
+
+# On Hosted macOS, the agent user doesn't have ownership of Miniconda's installation directory/
+# We need to take ownership if we want to update conda or install packages globally
+- bash: sudo chown -R $USER $CONDA
+  displayName: Take ownership of conda installation
+  condition: eq($(imageName), 'macos-latest')
+
+- powershell: Write-Host "##vso[task.prependpath]$env:CONDA\Scripts"
+  displayName: Add conda to PATH on windows
+  condition: eq($(imageName), 'windows-latest')
+
+- script: conda env create --quiet -n "test_env"
+  displayName: Create Anaconda environment
+
+- bash: |
+    ./scripts/install.sh -n test_env
+  displayName: 'Install dependencies and package'
+  condition: succeeded()
+
+- script: |
+    pip install pytest pytest-azurepipelines pytest-cov
+    python -m pytest -xv --cov sensory_integration_time --junitxml=junit/test-results.xml --cov-report xml --cov-report term --cov-report html .
+  displayName: 'pytest'
+  condition: succeeded()
+
+- task: PublishTestResults@2
+  condition: succeededOrFailed()
+  inputs:
+    testResultsFiles: "**/test-*.xml"
+    testRunTitle: "Publish test results for Python $(python.version) and OS $(imageName)"
+    mergeTestResults: true
+
+- task: PublishCodeCoverageResults@1
+  inputs:
+    codeCoverageTool: Cobertura
+    summaryFileLocation: "$(System.DefaultWorkingDirectory)/**/coverage.xml"
+    reportDirectory: "$(System.DefaultWorkingDirectory)/**/htmlcov"
