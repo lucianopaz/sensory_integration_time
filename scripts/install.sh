@@ -20,11 +20,16 @@ while getopts ":n:d" o; do
   esac
 done
 shift $((OPTIND-1))
-echo $TARGET_ENV
 
 # Get the scripts directory and the short uname
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 OS=$(uname -s)
+if [[ $OS == Darwin ]] || [[ $OS == Linux ]]
+then
+  PATHSEP=/
+else
+  PATHSEP=\\
+fi
 
 # Get the conda environment path
 conda_env_root_dir=$(dirname $CONDA_PREFIX | xargs basename)
@@ -33,11 +38,11 @@ then
   CONDA_ENVS_DIR=$(dirname $CONDA_PREFIX)
   NOT_IN_CONDA_ROOT_ENV=1
 else
-  CONDA_ENVS_DIR="$CONDA_PREFIX/envs"
+  CONDA_ENVS_DIR="$CONDA_PREFIX${PATHSEP}envs"
 fi
 
 # Activate target conda environment
-if [[ $TARGET_ENV != $CONDA_DEFAULT_ENV ]] && [[ ! -d "$CONDA_ENVS_DIR/$TARGET_ENV" ]] && [[ $TARGET_ENV != "base" ]]
+if [[ $TARGET_ENV != $CONDA_DEFAULT_ENV ]] && [[ ! -d "$CONDA_ENVS_DIR${PATHSEP}$TARGET_ENV" ]] && [[ $TARGET_ENV != "base" ]]
 then
   echo "Will create a conda environment $TARGET_ENV"
   conda create -n $TARGET_ENV -y
@@ -47,7 +52,7 @@ if [[ $TARGET_ENV != $CONDA_DEFAULT_ENV ]]
 then
   if [[ $TARGET_ENV != "base" ]]
   then
-    TARGET_ENV_DIR=$CONDA_ENVS_DIR/$TARGET_ENV
+    TARGET_ENV_DIR=$CONDA_ENVS_DIR${PATHSEP}$TARGET_ENV
   else
     TARGET_ENV_DIR=$(dirname $CONDA_ENVS_DIR)
   fi
@@ -56,17 +61,17 @@ else
 fi
 
 # Update the environment's activation env_vars scripts
-mkdir -p $TARGET_ENV_DIR/etc/conda/activate.d
-mkdir -p $TARGET_ENV_DIR/etc/conda/deactivate.d
+mkdir -p $TARGET_ENV_DIR${PATHSEP}etc${PATHSEP}conda${PATHSEP}activate.d
+mkdir -p $TARGET_ENV_DIR${PATHSEP}etc${PATHSEP}conda${PATHSEP}deactivate.d
 
 # Check if env_vars exist
-if [[ ! -f $TARGET_ENV_DIR/etc/conda/activate.d/env_vars.sh ]]
+if [[ ! -f $TARGET_ENV_DIR${PATHSEP}etc${PATHSEP}conda${PATHSEP}activate.d${PATHSEP}env_vars.sh ]]
 then
-  echo -e "#!/usr/bin/env bash\n" > $TARGET_ENV_DIR/etc/conda/activate.d/env_vars.sh
+  echo -e "#!/usr/bin/env bash\n" > $TARGET_ENV_DIR${PATHSEP}etc${PATHSEP}conda${PATHSEP}activate.d${PATHSEP}env_vars.sh
 fi
-if [[ ! -f $TARGET_ENV_DIR/etc/conda/deactivate.d/env_vars.sh ]]
+if [[ ! -f $TARGET_ENV_DIR${PATHSEP}etc${PATHSEP}conda${PATHSEP}deactivate.d${PATHSEP}env_vars.sh ]]
 then
-  echo -e "#!/usr/bin/env bash\n" > $TARGET_ENV_DIR/etc/conda/deactivate.d/env_vars.sh
+  echo -e "#!/usr/bin/env bash\n" > $TARGET_ENV_DIR${PATHSEP}etc${PATHSEP}conda${PATHSEP}deactivate.d${PATHSEP}env_vars.sh
 fi
 
 # Init the activation commands
@@ -77,10 +82,10 @@ _OLD_CPLUS_INCLUDE_PATH=\$CPLUS_INCLUDE_PATH
 _OLD_LD_LIBRARY_PATH=\$LD_LIBRARY_PATH
 _OLD_DYLD_LIBRARY_PATH=\$DYLD_LIBRARY_PATH
 
-export C_INCLUDE_PATH=$TARGET_ENV_DIR/include/:\$C_INCLUDE_PATH
-export CPLUS_INCLUDE_PATH=$TARGET_ENV_DIR/include/:\$CPLUS_INCLUDE_PATH
-export LD_LIBRARY_PATH=$TARGET_ENV_DIR/lib/:\$LD_LIBRARY_PATH
-export DYLD_LIBRARY_PATH=$TARGET_ENV_DIR/lib/:\$DYLD_LIBRARY_PATH"
+export C_INCLUDE_PATH=$TARGET_ENV_DIR${PATHSEP}include${PATHSEP}:\$C_INCLUDE_PATH
+export CPLUS_INCLUDE_PATH=$TARGET_ENV_DIR${PATHSEP}include${PATHSEP}:\$CPLUS_INCLUDE_PATH
+export LD_LIBRARY_PATH=$TARGET_ENV_DIR${PATHSEP}lib${PATHSEP}:\$LD_LIBRARY_PATH
+export DYLD_LIBRARY_PATH=$TARGET_ENV_DIR${PATHSEP}lib${PATHSEP}:\$DYLD_LIBRARY_PATH"
 DEACTIVATION="
 export C_INCLUDE_PATH=\$_OLD_CINCLUDE_PATH
 export CPLUS_INCLUDE_PATH=\$_OLD_CPLUS_INCLUDE_PATH
@@ -93,15 +98,15 @@ unset _OLD_LD_LIBRARY_PATH
 unset _OLD_DYLD_LIBRARY_PATH"
 
 # Check if env_vars was already edited, and if not, edit
-if [[ ! $(grep -q "$HEADER" $TARGET_ENV_DIR/etc/conda/activate.d/env_vars.sh) ]]
+if [[ ! $(grep -q "$HEADER" $TARGET_ENV_DIR${PATHSEP}etc${PATHSEP}conda${PATHSEP}activate.d${PATHSEP}env_vars.sh) ]]
 then
-  echo "$HEADER" >> $TARGET_ENV_DIR/etc/conda/activate.d/env_vars.sh
-  echo -e "$ACTIVATION" >> $TARGET_ENV_DIR/etc/conda/activate.d/env_vars.sh
+  echo "$HEADER" >> $TARGET_ENV_DIR${PATHSEP}etc${PATHSEP}conda${PATHSEP}activate.d${PATHSEP}env_vars.sh
+  echo -e "$ACTIVATION" >> $TARGET_ENV_DIR${PATHSEP}etc${PATHSEP}conda${PATHSEP}activate.d${PATHSEP}env_vars.sh
 fi
-if [[ ! $(grep -q "$HEADER" $TARGET_ENV_DIR/etc/conda/deactivate.d/env_vars.sh) ]]
+if [[ ! $(grep -q "$HEADER" $TARGET_ENV_DIR${PATHSEP}etc${PATHSEP}conda${PATHSEP}deactivate.d${PATHSEP}env_vars.sh) ]]
 then
-  echo "$HEADER" >> $TARGET_ENV_DIR/etc/conda/deactivate.d/env_vars.sh
-  echo -e "$DEACTIVATION" >> $TARGET_ENV_DIR/etc/conda/deactivate.d/env_vars.sh
+  echo "$HEADER" >> $TARGET_ENV_DIR${PATHSEP}etc${PATHSEP}conda${PATHSEP}deactivate.d${PATHSEP}env_vars.sh
+  echo -e "$DEACTIVATION" >> $TARGET_ENV_DIR${PATHSEP}etc${PATHSEP}conda${PATHSEP}deactivate.d${PATHSEP}env_vars.sh
 fi
 
 # conda install requirements
@@ -122,11 +127,11 @@ conda activate $TARGET_ENV
 set -x
 
 # Make the fortran shared library
-cd $DIR/../leakyIntegrator/src
+cd $DIR${PATHSEP}".."${PATHSEP}leakyIntegrator${PATHSEP}src
 make shared
 
 # pip install the package
-cd $DIR/..
+cd $DIR${PATHSEP}..
 pip install --upgrade pip
 pip install -r requirements.txt
 if [[ -z $DEVELOPMENT ]]

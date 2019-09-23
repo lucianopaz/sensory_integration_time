@@ -64,7 +64,7 @@ steps:
       call activate test_env
     fi
     pip install pytest pytest-azurepipelines pytest-cov
-    python -m pytest -xv --cov sensory_integration_time --junitxml=junit/test-results.xml --cov-report xml --cov-report term --cov-report html .
+    python -m pytest -v --cov sensory_integration_time --junitxml=junit/test-results.xml --cov-report xml --cov-report term --cov-report html .
   displayName: 'pytest'
   condition: succeeded()
 
