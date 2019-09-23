@@ -144,7 +144,6 @@ make shared
 
 # pip install the package
 cd $DIR${PATHSEP}..
-pip install --upgrade pip
 pip install -r requirements.txt
 if [[ -z $DEVELOPMENT ]]
 then
