@@ -41,14 +41,18 @@ steps:
   displayName: 'Add conda to PATH on windows'
   condition: eq(variables.imageName, 'windows-latest')
 
+- bash: |
+    choco install cygwin --params="/InstallDir:$(System.Workfolder)\cygwin"
+    $(System.Workfolder)\cygwin\cygwinsetup.exe -qnNdO -R "$(System.Workfolder)\cygwin" -s "http://cygwin.mirror.constant.com" -g -P ^
+        gcc-fortran
+    ln cygwin\\bin\\gfortran.exe $TARGET_ENV_DIR${PATHSEP}bin${PATHSEP}gfortran
+  displayName: 'Install gfortran on windows'
+  condition: eq(variables.imageName, 'windows-latest')
+
 - script: |
     conda update --yes conda
     conda create --yes --name test_env
   displayName: 'Create Anaconda environment'
-
-- bash: sudo apt-get install gfortran
-  displayName: 'Install gfortran on ubuntu'
-  condition: eq(variables.imageName, 'ubuntu-latest')
 
 - bash: |
     source activate test_env

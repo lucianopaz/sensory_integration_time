@@ -115,9 +115,6 @@ if [[ ! -z $OS ]]
 then
   # On windows we need to install gnu make and gfortran using chocolatey and cygwin
   choco install make
-  choco install cygwin --params"/InstallDir:cygwin"
-  cygwin\\cygwinsetup.exe -qnNdO -R cygwin -s "http://cygwin.mirror.constant.com" -g -P gcc-fortran
-  ln cygwin\\bin\\gfortran.exe $TARGET_ENV_DIR${PATHSEP}bin${PATHSEP}gfortran
 else
   conda install -y -n $TARGET_ENV make
 fi
