@@ -131,7 +131,7 @@ elif [[ $UNAME == Linux ]]
 then
   conda install -y -n $TARGET_ENV gfortran_linux-64;
   # Horrible hack to get CI to work properly
-  ln $TARGET_ENV_DIR${PATHSEP}bin${PATHSEP}gfortran_linux-64 $TARGET_ENV_DIR${PATHSEP}bin${PATHSEP}gfortran;
+  ln $TARGET_ENV_DIR${PATHSEP}bin${PATHSEP}x86_64-conda_*-linux-gnu-gfortran $TARGET_ENV_DIR${PATHSEP}bin${PATHSEP}gfortran;
 fi
 
 # Activate environment
