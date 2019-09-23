@@ -210,11 +210,10 @@ def get_humans_with_all_experiments(alldata, performance_filters=None):
         out = drop_subjects_by_performance(out, performance_filters)
     return out
 
-def test():
-    basepath = '/home/lpaz/Dropbox/Luciano/Duration/leaky/raw_data'
+def test(basepath):
     alldata = AllData(basepath)
     alldata.load_data()
     print(alldata.data)
 
 if __name__=="__main__":
-    test()
+    test(sys.argv[1])

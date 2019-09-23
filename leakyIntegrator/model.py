@@ -1708,8 +1708,6 @@ def tests():
             if col==0:
                 ax.set_ylabel(r'$\lambda={0}$'.format(l))
     plt.suptitle(r'$\alpha=1$ and $slope=0$')
-    plt.show(True)
-    
 
 
 if __name__=='__main__':

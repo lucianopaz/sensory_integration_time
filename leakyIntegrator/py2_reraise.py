@@ -15,5 +15,4 @@ Year: 2017
 from __future__ import division, print_function, absolute_import, unicode_literals
 
 def reraise(exception, additional_message, traceback):
-    raise type(exception), type(exception)(exception.message + additional_message), traceback
-    
+    raise (type(exception), type(exception)(exception.message + additional_message), traceback)
