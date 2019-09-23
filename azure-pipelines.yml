@@ -45,12 +45,7 @@ steps:
   displayName: 'Create Anaconda environment'
 
 - bash: |
-    if [[ $(imageName) != "windows-latest" ]]
-    then
-      source activate test_env
-    else
-      call activate test_env
-    fi
+    source activate test_env
     ./scripts/install.sh -n test_env
   displayName: 'Install dependencies and package'
   condition: succeeded()
