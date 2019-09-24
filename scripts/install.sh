@@ -75,7 +75,8 @@ then
 fi
 
 # Init the activation commands
-HEADER="####### LINES ADDED BY THE INSTALLATION OF THE LEAKYINTEGRATION PACKAGE ######"
+_HEADER="LINES ADDED BY THE INSTALLATION OF THE LEAKYINTEGRATION PACKAGE"
+HEADER="####### $_HEADER ######"
 ACTIVATION="
 _OLD_CINCLUDE_PATH=\$C_INCLUDE_PATH
 _OLD_CPLUS_INCLUDE_PATH=\$CPLUS_INCLUDE_PATH
@@ -98,12 +99,12 @@ unset _OLD_LD_LIBRARY_PATH
 unset _OLD_DYLD_LIBRARY_PATH"
 
 # Check if env_vars was already edited, and if not, edit
-if [[ ! $(grep -q "$HEADER" $TARGET_ENV_DIR${PATHSEP}etc${PATHSEP}conda${PATHSEP}activate.d${PATHSEP}env_vars.sh) ]]
+if [[ ! $(grep -q "$_HEADER" $TARGET_ENV_DIR${PATHSEP}etc${PATHSEP}conda${PATHSEP}activate.d${PATHSEP}env_vars.sh) ]]
 then
   echo "$HEADER" >> $TARGET_ENV_DIR${PATHSEP}etc${PATHSEP}conda${PATHSEP}activate.d${PATHSEP}env_vars.sh
   echo -e "$ACTIVATION" >> $TARGET_ENV_DIR${PATHSEP}etc${PATHSEP}conda${PATHSEP}activate.d${PATHSEP}env_vars.sh
 fi
-if [[ ! $(grep -q "$HEADER" $TARGET_ENV_DIR${PATHSEP}etc${PATHSEP}conda${PATHSEP}deactivate.d${PATHSEP}env_vars.sh) ]]
+if [[ ! $(grep -q "$_HEADER" $TARGET_ENV_DIR${PATHSEP}etc${PATHSEP}conda${PATHSEP}deactivate.d${PATHSEP}env_vars.sh) ]]
 then
   echo "$HEADER" >> $TARGET_ENV_DIR${PATHSEP}etc${PATHSEP}conda${PATHSEP}deactivate.d${PATHSEP}env_vars.sh
   echo -e "$DEACTIVATION" >> $TARGET_ENV_DIR${PATHSEP}etc${PATHSEP}conda${PATHSEP}deactivate.d${PATHSEP}env_vars.sh
@@ -123,28 +124,32 @@ fi
 # Ugly hack because we are not using conda build
 if [[ $UNAME == Darwin ]]
 then
-  conda install -y -n $TARGET_ENV -c conda-forge gfortran_osx-64 libiconv
+  conda install -y -n $TARGET_ENV -c conda-forge gfortran_osx-64
 elif [[ $UNAME == Linux ]]
 then
   conda install -y -n $TARGET_ENV gfortran_linux-64
   # Horrible hack to get CI to work properly
-  ln $TARGET_ENV_DIR${PATHSEP}bin${PATHSEP}x86_64-conda_*-linux-gnu-gfortran $TARGET_ENV_DIR${PATHSEP}bin${PATHSEP}gfortran;
+  if [[ ! -f $TARGET_ENV_DIR${PATHSEP}bin${PATHSEP}gfortran ]]
+  then
+    ln $TARGET_ENV_DIR${PATHSEP}bin${PATHSEP}x86_64-conda_*-linux-gnu-gfortran $TARGET_ENV_DIR${PATHSEP}bin${PATHSEP}gfortran;
+  fi
 fi
 
 # Activate environment
-echo "Activating target environment $TARGET_ENV"
-set +x
-eval "$(conda shell.bash hook)"
-conda activate $TARGET_ENV
-set -x
+source activate $TARGET_ENV
 
-# Make the fortran shared library
+# Make the fortran shared library and copy it to the environment's lib
 cd $DIR${PATHSEP}..${PATHSEP}leakyIntegrator${PATHSEP}src
-make shared
+make static shared
+mkdir -p $TARGET_ENV_DIR${PATHSEP}lib
+cp libincgamNEG.so $TARGET_ENV_DIR${PATHSEP}lib
+cp libincgamNEG.a $TARGET_ENV_DIR${PATHSEP}lib
 
 # pip install the package
 cd $DIR${PATHSEP}..
+pip install --upgrade pip
 pip install -r requirements.txt
+
 if [[ -z $DEVELOPMENT ]]
 then
   pip install -v .

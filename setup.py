@@ -116,29 +116,16 @@ class specialized_build_ext(build_ext, object):
                 shared_lib = "libincgamNEG.so"
                 static_lib = "libincgamNEG.a"
                 cp = "cp"
-            library_type = "shared"
+            library_type = "static"
             output_lib = shared_lib if library_type == "shared" else static_lib
             ext.libraries.append("incgamNEG")
-            if os.name == "nt":
-                conda_activate = "activate {env} && "
-            else:
-                conda_activate = 'conda shell.bash hook > temp_conda_hook && . temp_conda_hook && rm temp_conda_hook && conda activate {env} && '
 
-            shell_command = "make {lib_type} && {cp} {source} {dest}".format(
+            shell_command = "{cp} {source} {dest}".format(
                 lib_type=library_type,
                 cp=cp,
                 source=output_lib,
                 dest=os.path.join(output_dir, output_lib),
             )
-            distutils_logger.info(
-                "Will attempt to conda activate the environment '{}' by executing {}".
-                format(
-                    conda_environment, conda_activate.format(env=conda_environment)
-                )
-            )
-#            full_command = 'bash -c "{}"'.format(
-#                conda_activate.format(env=conda_environment) + shell_command
-#            )
             full_command = shell_command
 
             distutils_logger.info(
