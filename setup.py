@@ -119,6 +119,10 @@ class specialized_build_ext(build_ext, object):
             library_type = "shared"
             output_lib = shared_lib if library_type == "shared" else static_lib
             ext.libraries.append(":{0}".format(output_lib))
+            if os.name == "nt":
+                conda_activate = "activate {env} && "
+            else:
+                conda_activate = 'conda shell.bash hook > temp_conda_hook && . temp_conda_hook && rm temp_conda_hook && conda activate {env} && '
 
             shell_command = "make {lib_type} && {cp} {source} {dest}".format(
                 lib_type=library_type,
