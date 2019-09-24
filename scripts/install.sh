@@ -135,8 +135,12 @@ then
   fi
 fi
 
-# Activate environment
-source activate $TARGET_ENV
+# We cant activate the environment properly in a bash script so we do some exports to get things almost right
+export PATH=$TARGET_ENV_DIR${PATHSEP}bin:$PATH
+export C_INCLUDE_PATH=$TARGET_ENV_DIR${PATHSEP}include:$C_INCLUDE_PATH
+export CPLUS_INCLUDE_PATH=$TARGET_ENV_DIR${PATHSEP}include:$CPLUS_INCLUDE_PATH
+export LD_LIBRARY_PATH=$TARGET_ENV_DIR${PATHSEP}lib:$LD_LIBRARY_PATH
+export DYLD_LIBRARY_PATH=$TARGET_ENV_DIR${PATHSEP}lib:$DYLD_LIBRARY_PATH
 
 # Make the fortran shared library and copy it to the environment's lib
 cd $DIR${PATHSEP}..${PATHSEP}leakyIntegrator${PATHSEP}src

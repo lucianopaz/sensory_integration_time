@@ -66,6 +66,7 @@ steps:
     else
       call activate test_env
     fi
+    pip install -r requirements-dev.txt
     pip install pytest pytest-azurepipelines pytest-cov
     python -m pytest -v --cov sensory_integration_time --junitxml=junit/test-results.xml --cov-report xml --cov-report term --cov-report html .
   displayName: 'pytest'

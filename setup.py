@@ -118,7 +118,7 @@ class specialized_build_ext(build_ext, object):
                 cp = "cp"
             library_type = "static"
             output_lib = shared_lib if library_type == "shared" else static_lib
-            ext.libraries.append("incgamNEG")
+            ext.libraries.append(":{0}".format(output_lib))
 
             shell_command = "{cp} {source} {dest}".format(
                 lib_type=library_type,
