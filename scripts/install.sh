@@ -151,14 +151,20 @@ cp libincgamNEG.a $TARGET_ENV_DIR${PATHSEP}lib
 
 # pip install the package
 cd $DIR${PATHSEP}..
-pip install --upgrade pip
-pip install -r requirements.txt
+if [[ -z $OS ]]
+then
+  PIP=$TARGET_ENV_DIR${PATHSEP}bin${PATHSEP}pip
+else
+  PIP=$TARGET_ENV_DIR${PATHSEP}bin${PATHSEP}pip.exe
+fi
+$PIP install --upgrade pip
+$PIP install -r requirements.txt
 
 if [[ -z $DEVELOPMENT ]]
 then
-  pip install -v .
+  $PIP install -v .
 else
-  pip install -v -e .
+  $PIP install -v -e .
 fi
 
 echo "Successfully installed package!"
