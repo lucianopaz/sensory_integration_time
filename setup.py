@@ -107,35 +107,35 @@ class specialized_build_ext(build_ext, object):
             if plat.startswith("windows"):
                 shared_lib = "incgamNEG.*"
                 static_lib = "incgamNEG.*"
-                mv = "move"
+                cp = "copy"
             elif plat.startswith("darwin"):
                 shared_lib = "libincgamNEG.so"
                 static_lib = "libincgamNEG.a"
-                mv = "mv"
+                cp = "cp"
             else:
                 shared_lib = "libincgamNEG.so"
                 static_lib = "libincgamNEG.a"
-                mv = "mv"
+                cp = "cp"
             library_type = "shared"
             output_lib = shared_lib if library_type == "shared" else static_lib
             ext.libraries.append(":{0}".format(output_lib))
 
-            shell_command = "make {lib_type} && {mv} {source} {dest}".format(
+            shell_command = "make {lib_type} && {cp} {source} {dest}".format(
                 lib_type=library_type,
-                mv=mv,
+                cp=cp,
                 source=output_lib,
                 dest=os.path.join(output_dir, output_lib),
             )
-            conda_activate = 'conda shell.bash hook > temp_conda_hook && . temp_conda_hook && rm temp_conda_hook && conda activate {env} && '
             distutils_logger.info(
                 "Will attempt to conda activate the environment '{}' by executing {}".
                 format(
                     conda_environment, conda_activate.format(env=conda_environment)
                 )
             )
-            full_command = 'bash -c "{}"'.format(
-                conda_activate.format(env=conda_environment) + shell_command
-            )
+#            full_command = 'bash -c "{}"'.format(
+#                conda_activate.format(env=conda_environment) + shell_command
+#            )
+            full_command = shell_command
 
             distutils_logger.info(
                 "Will execute the following command in with subprocess.Popen: \n{0}".format(
