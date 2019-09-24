@@ -40,14 +40,6 @@ then
 else
   CONDA_ENVS_DIR="$CONDA_PREFIX${PATHSEP}envs"
 fi
-
-# Activate target conda environment
-if [[ $TARGET_ENV != $CONDA_DEFAULT_ENV ]] && [[ ! -d "$CONDA_ENVS_DIR${PATHSEP}$TARGET_ENV" ]] && [[ $TARGET_ENV != "base" ]]
-then
-  echo "Will create a conda environment $TARGET_ENV"
-  conda create -n $TARGET_ENV -y
-fi
-
 if [[ $TARGET_ENV != $CONDA_DEFAULT_ENV ]]
 then
   if [[ $TARGET_ENV != "base" ]]
@@ -58,6 +50,33 @@ then
   fi
 else
   TARGET_ENV_DIR=$CONDA_PREFIX
+fi
+
+# Create target conda environment and install requirements
+if [[ ! -z $OS ]]
+then
+  # On windows we need to install gnu make and gfortran using chocolatey and cygwin
+  choco install make
+  CONDA_INSTALLS="python=3.7 gsl pip"
+else
+  CONDA_INSTALLS="python=3.7 gsl pip make"
+fi
+
+if [[ $TARGET_ENV != $CONDA_DEFAULT_ENV ]] && [[ ! -d "$CONDA_ENVS_DIR${PATHSEP}$TARGET_ENV" ]] && [[ $TARGET_ENV != "base" ]]
+then
+  echo "Will create a conda environment $TARGET_ENV"
+  conda create -n $TARGET_ENV -y $CONDA_INSTALLS
+else
+  echo "Will install required packages to $TARGET_ENV"
+  conda install -n $TARGET_ENV -y $CONDA_INSTALLS
+fi
+
+# Get pip and update it
+if [[ -z $OS ]]
+then
+  PIP=$TARGET_ENV_DIR${PATHSEP}bin${PATHSEP}pip
+else
+  PIP=$TARGET_ENV_DIR${PATHSEP}bin${PATHSEP}pip.exe
 fi
 
 # Update the environment's activation env_vars scripts
@@ -110,16 +129,6 @@ then
   echo -e "$DEACTIVATION" >> $TARGET_ENV_DIR${PATHSEP}etc${PATHSEP}conda${PATHSEP}deactivate.d${PATHSEP}env_vars.sh
 fi
 
-# conda install requirements
-conda install -y -n $TARGET_ENV gsl pip
-if [[ ! -z $OS ]]
-then
-  # On windows we need to install gnu make and gfortran using chocolatey and cygwin
-  choco install make
-else
-  conda install -y -n $TARGET_ENV make
-fi
-
 # Platform dependent installs
 # Ugly hack because we are not using conda build
 if [[ $UNAME == Darwin ]]
@@ -149,21 +158,15 @@ mkdir -p $TARGET_ENV_DIR${PATHSEP}lib
 cp libincgamNEG.so $TARGET_ENV_DIR${PATHSEP}lib
 cp libincgamNEG.a $TARGET_ENV_DIR${PATHSEP}lib
 
-# pip install the package
+# Install requirements and the package
 cd $DIR${PATHSEP}..
-if [[ -z $OS ]]
-then
-  PIP=$TARGET_ENV_DIR${PATHSEP}bin${PATHSEP}pip
-else
-  PIP=$TARGET_ENV_DIR${PATHSEP}bin${PATHSEP}pip.exe
-fi
 $PIP install --upgrade pip
 $PIP install -r requirements.txt
-
 if [[ -z $DEVELOPMENT ]]
 then
   $PIP install -v .
 else
+  $PIP install -r requirements-dev.txt
   $PIP install -v -e .
 fi
 
