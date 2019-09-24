@@ -109,16 +109,16 @@ class specialized_build_ext(build_ext, object):
                 static_lib = "incgamNEG.*"
                 cp = "copy"
             elif plat.startswith("darwin"):
-                shared_lib = "incgamNEG"
-                static_lib = "incgamNEG"
+                shared_lib = "libincgamNEG.so"
+                static_lib = "libincgamNEG.a"
                 cp = "cp"
             else:
-                shared_lib = "incgamNEG"
-                static_lib = "incgamNEG"
+                shared_lib = "libincgamNEG.so"
+                static_lib = "libincgamNEG.a"
                 cp = "cp"
             library_type = "shared"
             output_lib = shared_lib if library_type == "shared" else static_lib
-            ext.libraries.append("{0}".format(output_lib))
+            ext.libraries.append("incgamNEG")
             if os.name == "nt":
                 conda_activate = "activate {env} && "
             else:
