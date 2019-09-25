@@ -47,6 +47,7 @@ steps:
   displayName: 'Update base conda'
 
 - bash: |
+    source activate base  # We rely on conda environment variables present in bash to be able to install properly
     ./scripts/install.sh -n test_env
   displayName: 'Install dependencies and package'
 
