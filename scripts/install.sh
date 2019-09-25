@@ -62,21 +62,13 @@ else
   CONDA_INSTALLS="python=3.7 gsl pip make"
 fi
 
-if [[ $TARGET_ENV != $CONDA_DEFAULT_ENV ]] && [[ ! -d "$CONDA_ENVS_DIR${PATHSEP}$TARGET_ENV" ]] && [[ $TARGET_ENV != "base" ]]
+if [[ $(conda env list | grep -q "^$TARGET_ENV") ]]
 then
   echo "Will create a conda environment $TARGET_ENV"
   conda create -n $TARGET_ENV -y $CONDA_INSTALLS
 else
   echo "Will install required packages to $TARGET_ENV"
   conda install -n $TARGET_ENV -y $CONDA_INSTALLS
-fi
-
-# Get pip and update it
-if [[ -z $OS ]]
-then
-  PIP=$TARGET_ENV_DIR${PATHSEP}bin${PATHSEP}pip
-else
-  PIP=$TARGET_ENV_DIR${PATHSEP}bin${PATHSEP}pip.exe
 fi
 
 # Update the environment's activation env_vars scripts
@@ -129,6 +121,9 @@ then
   echo -e "$DEACTIVATION" >> $TARGET_ENV_DIR${PATHSEP}etc${PATHSEP}conda${PATHSEP}deactivate.d${PATHSEP}env_vars.sh
 fi
 
+# We activate the environment immediately
+source activate $TARGET_ENV
+
 # Platform dependent installs
 # Ugly hack because we are not using conda build
 if [[ $UNAME == Darwin ]]
@@ -143,13 +138,6 @@ then
     ln $TARGET_ENV_DIR${PATHSEP}bin${PATHSEP}x86_64-conda_*-linux-gnu-gfortran $TARGET_ENV_DIR${PATHSEP}bin${PATHSEP}gfortran;
   fi
 fi
-
-# We cant activate the environment properly in a bash script so we do some exports to get things almost right
-export PATH=$TARGET_ENV_DIR${PATHSEP}bin:$PATH
-export C_INCLUDE_PATH=$TARGET_ENV_DIR${PATHSEP}include:$C_INCLUDE_PATH
-export CPLUS_INCLUDE_PATH=$TARGET_ENV_DIR${PATHSEP}include:$CPLUS_INCLUDE_PATH
-export LD_LIBRARY_PATH=$TARGET_ENV_DIR${PATHSEP}lib:$LD_LIBRARY_PATH
-export DYLD_LIBRARY_PATH=$TARGET_ENV_DIR${PATHSEP}lib:$DYLD_LIBRARY_PATH
 
 # Make the fortran shared library and copy it to the environment's lib
 cd $DIR${PATHSEP}..${PATHSEP}leakyIntegrator${PATHSEP}src

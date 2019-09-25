@@ -80,7 +80,7 @@ class specialized_build_ext(build_ext, object):
             sources = list(sources)
 
             if len(sources) > 1:
-                sources_path = os.path.commonprefix(sources)
+                sources_path = os.path.commonpath(sources)
             else:
                 sources_path = os.path.dirname(sources[0])
             sources_path = os.path.realpath(sources_path)

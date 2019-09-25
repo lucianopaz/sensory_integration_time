@@ -8,7 +8,7 @@ trigger:
 
 strategy:
   matrix:
-    Python37:
+    Python37-Linux:
       python.version: '3.7'
       imageName: 'ubuntu-latest'
     Python37-Windows:
@@ -22,11 +22,6 @@ pool:
   vmImage: $(imageName)
 
 steps:
-- task: UsePythonVersion@0
-  inputs:
-    versionSpec: '$(python.version)'
-  displayName: 'Use Python $(python.version)'
-
 - bash: echo "##vso[task.prependpath]$CONDA/bin"
   displayName: 'Add conda to PATH on unix'
   condition: ne(variables.imageName, 'windows-latest')
@@ -43,30 +38,20 @@ steps:
 
 - bash: |
     choco install cygwin --params="/InstallDir:$(System.Workfolder)\cygwin"
-    $(System.Workfolder)\cygwin\cygwinsetup.exe -qnNdO -R "$(System.Workfolder)\cygwin" -s "http://cygwin.mirror.constant.com" -g -P ^
-        gcc-fortran
+    $(System.Workfolder)\cygwin\cygwinsetup.exe -qnNdO -R "$(System.Workfolder)\cygwin" -s "http://cygwin.mirror.constant.com" -g -P gcc-fortran
     ln cygwin\\bin\\gfortran.exe $TARGET_ENV_DIR${PATHSEP}bin${PATHSEP}gfortran
   displayName: 'Install gfortran on windows'
   condition: eq(variables.imageName, 'windows-latest')
 
-- script: |
-    conda update --yes conda
-    conda create --yes --name test_env
-  displayName: 'Create Anaconda environment'
+- script: conda update --yes conda
+  displayName: 'Update base conda'
 
 - bash: |
-    source activate test_env
     ./scripts/install.sh -n test_env
   displayName: 'Install dependencies and package'
 
 - bash: |
-    if [[ $(imageName) != "windows-latest" ]]
-    then
-      source activate test_env
-    else
-      call activate test_env
-    fi
-    pip install -r requirements-dev.txt
+    source activate test_env
     pip install pytest pytest-azurepipelines pytest-cov
     python -m pytest -v --cov sensory_integration_time --junitxml=junit/test-results.xml --cov-report xml --cov-report term --cov-report html .
   displayName: 'pytest'

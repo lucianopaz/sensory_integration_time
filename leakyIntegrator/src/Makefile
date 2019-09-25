@@ -1,11 +1,21 @@
 SRCS =	setprecision.f90 cons.f90  gammaError.f90 incgamNEG.f90
 OBJS =	setprecision.o cons.o  gammaError.o incgamNEG.o
 
-FC = gfortran
-LD = gfortran
-FFLAGS = -O3 -fPIC
+ifeq ($(FC),)
+    FC = gfortran
+endif
+ifeq ($(LD),)
+    LD = gfortran
+endif
+ifeq ($(FFLAGS),)
+    FFLAGS = -O3 -fPIC
+endif
+ifeq ($(LDFLAGS),)
 LDFLAGS = -lquadmath -lc -lm -ldl
+endif
+ifeq ($(AR),)
 AR = ar
+endif
 
 ifeq ($(OS),Windows_NT)
     BUILD = windows_build
@@ -13,17 +23,7 @@ ifeq ($(OS),Windows_NT)
     LDFLAGS += -Wl,--out-implib,incgamNEG.lib
     LIBS = incgamNEG.dll
     SHARED_LIB = incgamNEG.dll
-    STATIC_LIB = incgamNEG.dll
-    ifeq ($(PROCESSOR_ARCHITEW6432),AMD64)
-        FFLAGS += -D AMD64
-    else
-        ifeq ($(PROCESSOR_ARCHITECTURE),AMD64)
-            FFLAGS += -D AMD64
-        endif
-        ifeq ($(PROCESSOR_ARCHITECTURE),x86)
-            FFLAGS += -D IA32
-        endif
-    endif
+    STATIC_LIB = incgamNEG.dll  # We wont support static libraries in windows
 else
     UNAME_S := $(shell uname -s)
     ifeq ($(UNAME_S),Linux)
@@ -39,16 +39,6 @@ else
         LIBS = libincgamNEG.so libincgamNEG.a
         SHARED_LIB = libincgamNEG.so
         STATIC_LIB = libincgamNEG.a
-    endif
-    UNAME_P := $(shell uname -p)
-    ifeq ($(UNAME_P),x86_64)
-        FFLAGS += -D AMD64
-    endif
-    ifneq ($(filter %86,$(UNAME_P)),)
-        FFLAGS += -D IA32
-    endif
-    ifneq ($(filter arm%,$(UNAME_P)),)
-        FFLAGS += -D ARM
     endif
 endif
 
@@ -68,6 +58,9 @@ libincgamNEG.dylib: $(OBJS)
 	$(LD) -dynamiclib $(OBJS) $(LDFLAGS) -o $@
 
 incgamNEG.dll:  $(OBJS)
+	$(LD) -shared $(OBJS) $(LDFLAGS) -o $@
+
+incgamNEG.lib:  $(OBJS)
 	$(LD) -shared $(OBJS) $(LDFLAGS) -o $@
 
 clean: cleantemp
