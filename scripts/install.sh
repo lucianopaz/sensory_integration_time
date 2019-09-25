@@ -131,12 +131,7 @@ then
   conda install -y -n $TARGET_ENV -c conda-forge gfortran_osx-64
 elif [[ $UNAME == Linux ]]
 then
-  conda install -y -n $TARGET_ENV gfortran_linux-64
-  # Horrible hack to get CI to work properly
-  if [[ ! -f $TARGET_ENV_DIR${PATHSEP}bin${PATHSEP}gfortran ]]
-  then
-    ln $TARGET_ENV_DIR${PATHSEP}bin${PATHSEP}x86_64-conda_*-linux-gnu-gfortran $TARGET_ENV_DIR${PATHSEP}bin${PATHSEP}gfortran;
-  fi
+  conda install -y -n $TARGET_ENV gfortran_linux-64  # This adds the FC environment variable to point to gfortran
 fi
 
 # Make the fortran shared library and copy it to the environment's lib

@@ -1,20 +1,15 @@
-SRCS =	setprecision.f90 cons.f90  gammaError.f90 incgamNEG.f90
-OBJS =	setprecision.o cons.o  gammaError.o incgamNEG.o
+SRCS =	setprecision.f90 cons.f90 gammaError.f90 incgamNEG.f90
+OBJS =	setprecision.o cons.o gammaError.o incgamNEG.o
 
 ifeq ($(FC),)
     FC = gfortran
 endif
-ifeq ($(LD),)
-    LD = gfortran
-endif
 ifeq ($(FFLAGS),)
     FFLAGS = -O3 -fPIC
 endif
-ifeq ($(LDFLAGS),)
-LDFLAGS = -lquadmath -lc -lm -ldl
-endif
+LINK_LIBS = -lquadmath -lc -lm -ldl
 ifeq ($(AR),)
-AR = ar
+    AR = ar
 endif
 
 ifeq ($(OS),Windows_NT)
@@ -49,19 +44,19 @@ shared: $(SHARED_LIB)
 static: $(STATIC_LIB)
 
 libincgamNEG.so: $(OBJS)
-	$(LD) -shared $(OBJS) $(LDFLAGS) -o $@
+	$(FC) -shared $(OBJS) $(LINK_LIBS) $(FORTRAN_LDFLAGS) -o $@
 
 libincgamNEG.a:  $(OBJS)
 	$(AR) crs $@ $(OBJS) $(STATIC_LIBS)
 
 libincgamNEG.dylib: $(OBJS)
-	$(LD) -dynamiclib $(OBJS) $(LDFLAGS) -o $@
+	$(FC) -dynamiclib $(OBJS) $(LINK_LIBS) $(FORTRAN_LDFLAGS) -o $@
 
 incgamNEG.dll:  $(OBJS)
-	$(LD) -shared $(OBJS) $(LDFLAGS) -o $@
+	$(FC) -shared $(OBJS) $(LINK_LIBS) $(FORTRAN_LDFLAGS) -o $@
 
 incgamNEG.lib:  $(OBJS)
-	$(LD) -shared $(OBJS) $(LDFLAGS) -o $@
+	$(FC) -shared $(OBJS) $(LINK_LIBS) $(FORTRAN_LDFLAGS) -o $@
 
 clean: cleantemp
 	rm -f $(LIBS)
