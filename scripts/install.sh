@@ -86,7 +86,7 @@ fi
 
 # Make the fortran shared library and copy it to the environment's lib
 cd $DIR${PATHSEP}..${PATHSEP}leakyIntegrator${PATHSEP}src
-make static shared
+make
 mkdir -p $TARGET_ENV_DIR${PATHSEP}lib
 cp libincgamNEG.so $TARGET_ENV_DIR${PATHSEP}lib
 cp libincgamNEG.a $TARGET_ENV_DIR${PATHSEP}lib

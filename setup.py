@@ -20,7 +20,13 @@ from distutils.errors import DistutilsSetupError
 from distutils import log as distutils_logger
 
 
-conda_environment = os.environ["CONDA_DEFAULT_ENV"]
+conda_prefix = os.environ.get("CONDA_PREFIX", None)
+if conda_prefix is not None:
+    extra_compile_args = ["-I"+os.path.join(conda_prefix, "include")]
+    extra_link_args = ["-L"+os.path.join(conda_prefix, "lib")]
+else:
+    extra_compile_args = []
+    extra_link_args = []
 
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 REQUIREMENTS_FILE = os.path.join(PROJECT_ROOT, "requirements.txt")
@@ -31,6 +37,8 @@ extension1 = setuptools.extension.Extension(
     "leakyIntegrator.leaky_integral_calculator",
     sources=["leakyIntegrator/src/leaky_integral_calculator.c"],
     libraries=["m", "dl", "gsl", "gslcblas", "gfortran", "quadmath"],
+    extra_compile_args=extra_compile_args,
+    extra_link_args=extra_link_args
 )
 
 
