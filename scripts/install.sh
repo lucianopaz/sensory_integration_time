@@ -62,7 +62,7 @@ else
   CONDA_INSTALLS="python=3.7 gsl pip make"
 fi
 
-if [[ $(conda env list | grep -q "^$TARGET_ENV") ]]
+if [[ $(conda env list | grep -c "^$TARGET_ENV[[:space:]]") ]]
 then
   echo "Will create a conda environment $TARGET_ENV"
   conda create -n $TARGET_ENV -y $CONDA_INSTALLS
@@ -148,14 +148,14 @@ cp libincgamNEG.a $TARGET_ENV_DIR${PATHSEP}lib
 
 # Install requirements and the package
 cd $DIR${PATHSEP}..
-$PIP install --upgrade pip
-$PIP install -r requirements.txt
+pip install --upgrade pip
+pip install -r requirements.txt
 if [[ -z $DEVELOPMENT ]]
 then
-  $PIP install -v .
+  pip install -v .
 else
-  $PIP install -r requirements-dev.txt
-  $PIP install -v -e .
+  pip install -r requirements-dev.txt
+  pip install -v -e .
 fi
 
 echo "Successfully installed package!"
