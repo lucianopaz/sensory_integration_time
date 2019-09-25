@@ -124,7 +124,7 @@ class specialized_build_ext(build_ext, object):
                 shared_lib = "libincgamNEG.so"
                 static_lib = "libincgamNEG.a"
                 cp = "cp"
-            library_type = "static"
+            library_type = "shared"
             output_lib = shared_lib if library_type == "shared" else static_lib
             ext.libraries.append(":{0}".format(output_lib))
 

@@ -58,6 +58,12 @@ steps:
   displayName: 'pytest'
   condition: succeeded()
 
+- bash: |
+    source activate test_env
+    ldd $CONDA_PREFIX/lib/python3.7/site-packages/leakyIntegrator/leaky_integral_*.so
+  displayName: 'debugLink'
+  condition: failed()
+
 - task: PublishTestResults@2
   condition: succeededOrFailed()
   inputs:
