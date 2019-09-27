@@ -45,10 +45,19 @@ steps:
   displayName: 'Add conda to PATH on windows'
   condition: eq(variables.imageName, 'windows-latest')
 
-- script: |
+- bash: |
     conda update --yes conda
     conda create --yes --name test_env python=$(python.version) gsl
-  displayName: 'Create Anaconda environment with GSL libraries'
+    if [[ $(imageName) == "ubuntu-latest" ]]
+    then
+      conda install -c anaconda gfortran_linux-64
+    elif [[ $(imageName) == "macos-latest" ]]
+    then
+      conda install -c anaconda gfortran_osx-64
+    else
+      conda install -c msys2 m2w64-gcc-fortran
+    fi
+  displayName: 'Create Anaconda environment with GSL libraries and gfortran'
 
 - bash: |
     source activate test_env
