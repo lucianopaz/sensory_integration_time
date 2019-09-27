@@ -50,12 +50,12 @@ steps:
     conda create --yes --name test_env python=$(python.version) gsl
     if [[ $(imageName) == "ubuntu-latest" ]]
     then
-      conda install -c anaconda gfortran_linux-64
+      conda install --yes -c anaconda gfortran_linux-64
     elif [[ $(imageName) == "macos-latest" ]]
     then
-      conda install -c anaconda gfortran_osx-64
+      conda install --yes -c anaconda gfortran_osx-64
     else
-      conda install -c msys2 m2w64-gcc-fortran
+      conda install --yes -c msys2 m2w64-gcc-fortran
     fi
   displayName: 'Create Anaconda environment with GSL libraries and gfortran'
 
