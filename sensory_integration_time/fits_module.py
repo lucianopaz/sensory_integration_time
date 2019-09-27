@@ -3515,6 +3515,8 @@ Optional arguments are:
     be saved or loaded from. This path can be absolute or
     relative. Be aware that the default is relative to the
     current directory. [Default 'fits']
+'--all_data_path': The path to the directory where all the raw data is located.
+    [Default "."]
  
 The following argument values must be supplied as JSON encoded strings.
 JSON dictionaries are written as '{{"key":val,"key2":val2}}'
@@ -3621,7 +3623,8 @@ python {0} -t 1 -n 1 --save
                 'optimizer_kwargs':{},'experiment':'humans','debug':True,
                 'plot_merge':None, 'verbose':False, 'show': False,
                 'start_point_from_fit_output':None,'override':False,
-                'fits_path':'fits', 'performance_filters': None}
+                'fits_path':'fits', 'performance_filters': None,
+                'all_data_path': "."}
     if '-g' in argv or '--debug' in argv:
         options['debug'] = True
         logging.basicConfig(level=logging.DEBUG)
@@ -3713,6 +3716,9 @@ python {0} -t 1 -n 1 --save
                 expecting_key = False
             elif arg=='--show':
                 options['show'] = True
+            elif arg=='--all_data_path':
+                key = 'all_data_path'
+                expecting_key = False
             elif arg=='-h' or arg=='--help':
                 print(script_help)
                 sys.exit(2)
@@ -3798,10 +3804,11 @@ def main(task=1, ntasks=1, task_base=1, method=None, optimizer='cma',
          optimizer_kwargs = {}, experiment = 'humans', debug = True,
          plot_merge = None, verbose = False, show =  False,
          start_point_from_fit_output = None, override = False,
-         fits_path = 'fits', performance_filters =  None):
+         fits_path = 'fits', performance_filters =  None,
+         all_data_path="."):
     
     # Prepare subjectSessions list
-    alldata = io.AllData('/home/lpaz/Dropbox/Luciano/Duration/leaky/raw_data')
+    alldata = io.AllData(all_data_path)
     subject_type = 'humans'
     if experiment=='humans':
         data = io.get_humans_with_all_experiments(alldata)

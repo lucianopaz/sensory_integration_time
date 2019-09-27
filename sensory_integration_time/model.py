@@ -1410,7 +1410,7 @@ def prob2AFC(mean1, var1, mean2, var2, low_perror=0., high_perror=0.):
     """
     return 1-high_perror - (1-low_perror-high_perror)*stats.norm.cdf(0., loc=mean2-mean1, scale=np.sqrt(var1+var2))
 
-def tests():
+def tests(show=False):
     time_unit_conversion = 1.
     T = 1000.*time_unit_conversion
     dt = 1.*time_unit_conversion
@@ -1708,6 +1708,8 @@ def tests():
             if col==0:
                 ax.set_ylabel(r'$\lambda={0}$'.format(l))
     plt.suptitle(r'$\alpha=1$ and $slope=0$')
+    if show:
+        plt.show(True)
 
 
 if __name__=='__main__':

@@ -10,7 +10,7 @@ Year: 2018
 
 from __future__ import division, print_function, absolute_import, unicode_literals
 
-__version__ = '0.9.2'
+__version__ = '1.0.0'
 
 from . import data_io
 from . import model

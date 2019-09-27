@@ -8,7 +8,7 @@ trigger:
 
 strategy:
   matrix:
-    Python37-Linux:
+    Python37-ubuntu:
       python.version: '3.7'
       imageName: 'ubuntu-latest'
     Python37-Windows:
@@ -16,6 +16,15 @@ strategy:
       imageName: 'windows-latest'
     Python37-MacOS:
       python.version: '3.7'
+      imageName: 'macos-latest'
+    Python27-ubuntu:
+      python.version: '2.7'
+      imageName: 'ubuntu-latest'
+    Python27-Windows:
+      python.version: '2.7'
+      imageName: 'windows-latest'
+    Python27-MacOS:
+      python.version: '2.7'
       imageName: 'macos-latest'
 
 pool:
@@ -36,33 +45,23 @@ steps:
   displayName: 'Add conda to PATH on windows'
   condition: eq(variables.imageName, 'windows-latest')
 
-- bash: |
-    choco install cygwin --params="/InstallDir:$(System.Workfolder)\cygwin"
-    $(System.Workfolder)\cygwin\cygwinsetup.exe -qnNdO -R "$(System.Workfolder)\cygwin" -s "http://cygwin.mirror.constant.com" -g -P gcc-fortran
-    ln cygwin\\bin\\gfortran.exe $TARGET_ENV_DIR${PATHSEP}bin${PATHSEP}gfortran
-  displayName: 'Install gfortran on windows'
-  condition: eq(variables.imageName, 'windows-latest')
-
-- script: conda update --yes conda
-  displayName: 'Update base conda'
+- script: |
+    conda update --yes conda
+    conda create --yes --name test_env python=$(python.version) gsl
+  displayName: 'Create Anaconda environment with GSL libraries'
 
 - bash: |
-    source activate base  # We rely on conda environment variables present in bash to be able to install properly
-    ./scripts/install.sh -n test_env
+    source activate test_env
+    pip install -r requirements.txt
+    pip install .
   displayName: 'Install dependencies and package'
 
 - bash: |
     source activate test_env
-    pip install pytest pytest-azurepipelines pytest-cov
+    pip install -r requirements-dev.txt
     python -m pytest -v --cov sensory_integration_time --junitxml=junit/test-results.xml --cov-report xml --cov-report term --cov-report html .
   displayName: 'pytest'
   condition: succeeded()
-
-- bash: |
-    source activate test_env
-    ldd $CONDA_PREFIX/lib/python3.7/site-packages/leakyIntegrator/leaky_integral_*.so
-  displayName: 'debugLink'
-  condition: failed()
 
 - task: PublishTestResults@2
   condition: succeededOrFailed()

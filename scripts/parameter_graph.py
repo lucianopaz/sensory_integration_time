@@ -3,10 +3,10 @@ from __future__ import division, print_function, absolute_import, unicode_litera
 from six import iteritems
 import numpy as np
 import pandas as pd
-from leakyIntegrator import fits_module as fm
-from leakyIntegrator.fits_module import Fitter
-from leakyIntegrator import data_io as io
-from leakyIntegrator.model import Leaky, Stimulator, prob2AFC
+from sensory_integration_time import fits_module as fm
+from sensory_integration_time.fits_module import Fitter
+from sensory_integration_time import data_io as io
+from sensory_integration_time.model import Leaky, Stimulator, prob2AFC
 from matplotlib import pyplot as plt
 import os, re, pprint
 from tqdm import tqdm
