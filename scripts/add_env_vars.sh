@@ -6,7 +6,7 @@ set -ex
 usage() { echo "Usage: $0 [-n conda environment onto which install] [-d flag to indicate whether to install the package in pip development mode]" 1>&2; exit 1; }
 TARGET_ENV=$CONDA_DEFAULT_ENV
 
-while getopts ":n" o; do
+while getopts ":n:" o; do
   case "${o}" in
     n)
       TARGET_ENV=${OPTARG}
@@ -21,19 +21,21 @@ shift $((OPTIND-1))
 # Test if target environment exits
 if [[ -z $TARGET_ENV ]]
 then
-  MSG="Your shell is not in an active conda environment and no conda target
-       environment was specificied through option -n.
-       Please either activate an environment or specify the target environment
-       explicitly.";
-  echo $MSG;
+  MSG="\n
+       Your shell is not in an active conda environment\n
+       and no conda target environment was specificied through option -n.\n
+       Please either activate an environment\n
+       or specify the target environment explicitly.";
+  echo -e $MSG;
   exit 1;
 fi
 
 if [[ $(conda env list | grep -c "^$TARGET_ENV[[:space:]]") ]]
 then
-  MSG="The desired target envirornment $TARGET_ENV does not exist. Please create
-       it and rerun this script.";
-  echo $MSG;
+  MSG="\n
+       The desired target envirornment $TARGET_ENV does not exist.\n
+       Please create it and rerun this script.";
+  echo -e $MSG;
   exit 2;
 fi
 
