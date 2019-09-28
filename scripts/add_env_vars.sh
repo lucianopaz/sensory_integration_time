@@ -30,7 +30,7 @@ then
   exit 1;
 fi
 
-if [[ $(conda env list | grep -c "^$TARGET_ENV[[:space:]]") ]]
+if [[ ! $(conda env list | grep -c "^$TARGET_ENV[[:space:]]") ]]
 then
   MSG="\n
        The desired target envirornment $TARGET_ENV does not exist.\n
