@@ -57,7 +57,7 @@ steps:
     else
       conda install --yes --name test_env -c msys2 m2w64-gcc-fortran
     fi
-    ./scripts/add_env_vars.sh
+    ./scripts/add_env_vars.sh -n test_env
   displayName: 'Create Anaconda environment with GSL libraries and gfortran'
 
 - bash: |
