@@ -20,12 +20,47 @@ import codecs
 import re
 import setuptools
 from numpy.distutils.misc_util import Configuration
+import sys
 
 
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 REQUIREMENTS_FILE = os.path.join(PROJECT_ROOT, "requirements.txt")
 README_FILE = os.path.join(PROJECT_ROOT, "README.md")
 SOURCE_FILE_PATH = os.path.join("sensory_integration_time", "src")
+
+#extra_compile_args = [
+#    "-I{}".format(d) for d in list(
+#        set(
+#            os.environ.get("C_INCLUDE_PATH", "").split(":") +
+#            os.environ.get("CPLUS_INCLUDE_PATH", "").split(":")
+#        )
+#    ) if d
+#]
+#extra_link_args = [
+#    "-L{}".format(d) for d in list(
+#        set(
+#            os.environ.get("LD_LIBRARY_PATH", "").split(":") +
+#            os.environ.get("DYLD_LIBRARY_PATH", "").split(":")
+#        )
+#    ) if d
+#]
+include_dirs = [
+    d for d in list(
+        set(
+            os.environ.get("C_INCLUDE_PATH", "").split(":") +
+            os.environ.get("CPLUS_INCLUDE_PATH", "").split(":")
+        )
+    ) if d
+]
+library_dirs = [
+    d for d in list(
+        set(
+            os.environ.get("LD_LIBRARY_PATH", "").split(":") +
+            os.environ.get("DYLD_LIBRARY_PATH", "").split(":")
+        )
+    ) if d
+]
+
 
 description = "Leaky Integration underlying tactile perception interface for fitting and prediction"
 
@@ -58,6 +93,7 @@ def configuration():
         package_name="sensory_integration_time",
         parent_name=None
     )
+    config.add_include_dirs(*include_dirs)
     config.add_library(
         name="incgamNEG",
         sources=[
@@ -70,16 +106,17 @@ def configuration():
     )
     config.add_extension(
         name="leaky_integral_calculator",
+        language="c",
         sources=["sensory_integration_time/src/leaky_integral_calculator.c"],
         libraries=[
             "m",
             "dl",
             "gsl",
             "gslcblas",
-            "gfortran",
             "quadmath",
-            "incgamNEG"
-        ]
+        ],
+        library_dirs=library_dirs,
+        extra_link_args=["-l:libincgamNEG.a"]
     )
     return config
 

@@ -6,13 +6,14 @@
   CONTAINS
 
       SUBROUTINE gseries(a,x,igam,ierr) BIND (c, NAME='gseries')
+      USE iso_c_binding
       USE Someconstants
       USE GammaError
       IMPLICIT NONE
-      REAL(r8) :: a, x, igam
-      REAL(r8) :: eps, p, q, t, v
-      REAL(r8) :: logamma
-      INTEGER ::  ierr, k, m
+      REAL(C_DOUBLE) :: a, x, igam
+      REAL(C_DOUBLE) :: eps, p, q, t, v
+      REAL(C_DOUBLE) :: logamma
+      INTEGER(C_INT) ::  ierr, k, m
       eps=epss            
       t=1.0_r8/a;
       v=t;
@@ -30,14 +31,14 @@
         IF (a>0.0_r8) THEN
           logamma=loggam(a)
           IF (logamma<loggiant) THEN
-            igam=v/gamma(a)
+            igam=v/custom_gamma(a)
           ELSE
             igam=0.0_r8
             ierr=1
           ENDIF
         ELSE
           IF (1-a<170) THEN
-            igam=v/gamma(a)
+            igam=v/custom_gamma(a)
           ELSE
             igam=0.0_r8
             ierr=1
@@ -50,12 +51,13 @@
       END SUBROUTINE gseries
 
       SUBROUTINE gexpan(a,x,igam,ierr) BIND (c, NAME='gexpan')
+      USE ISO_C_BINDING
       USE Someconstants
       USE GammaError
       IMPLICIT NONE
-      REAL(r8) :: a, x, igam
-      REAL(r8) :: eps, p, t, v
-      INTEGER ::  ierr, k, m
+      REAL(C_DOUBLE) :: a, x, igam
+      REAL(C_DOUBLE) :: eps, p, t, v
+      INTEGER(C_INT) ::  ierr, k, m
       eps=epss            
       ierr=0
       t=1.0_r8;
@@ -73,7 +75,7 @@
         IF ((x>loggiant).OR.(loggam(a)>loggiant)) THEN
           m=1
         ELSE 
-          igam=v*exp(x)/(x*gamma(a));
+          igam=v*exp(x)/(x*custom_gamma(a));
         ENDIF
       ENDIF
       IF (m==1) THEN
@@ -94,11 +96,11 @@
         y=(exp(x)-1.0_r8)/x
       ELSE
         t=x*0.5_r8;
-        y=exp(t)*sinh(t,eps)/t
+        y=exp(t)*custom_sinh(t,eps)/t
       ENDIF
       exmin1=y
       END FUNCTION exmin1
-      RECURSIVE FUNCTION sinh(x,eps) RESULT(sinhh)
+      RECURSIVE FUNCTION custom_sinh(x,eps) RESULT(sinhh)
       USE Someconstants  
       IMPLICIT NONE
       !to compute hyperbolic function sinh (x)}
@@ -123,14 +125,14 @@
         END DO
         y=x*y
       ELSEIF (ax<0.36_r8) THEN
-        t=sinh(x*0.333333333333333333333333333333_r8,eps);
+        t=custom_sinh(x*0.333333333333333333333333333333_r8,eps);
         y=t*(3.0_r8+4.0_r8*t*t);
       ELSE
         t=exp(x);
         y=(t-1.0_r8/t)*0.5_r8
       ENDIF
       sinhh=y
-      END FUNCTION sinh
+      END FUNCTION custom_sinh
    END MODULE IncgamNEG
 
 

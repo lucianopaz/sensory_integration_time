@@ -2,7 +2,7 @@
   USE set_precision
   IMPLICIT NONE
   PRIVATE
-  PUBLIC  :: errorfunction, inverfc, gamma, &
+  PUBLIC  :: errorfunction, inverfc, custom_gamma, &
              loggam, quotgamm, lnec, hypfun, auxgam
   CONTAINS 
     RECURSIVE FUNCTION errorfunction (x, erfcc, expo) RESULT(errfu)
@@ -147,7 +147,7 @@
     ENDIF
     END FUNCTION inverfc
    
-    RECURSIVE FUNCTION gamma(x) RESULT(gam)
+    RECURSIVE FUNCTION custom_gamma(x) RESULT(gam)
     !----------------------------------------
     ! Computation of the Euler gamma function 
     ! Gamma(x).
@@ -175,7 +175,7 @@
         gam=sign(1.0_r8,x-k)*giant
       ENDIF
     ELSEIF (x<0.45_r8) THEN
-      gam=pi/(sin(pi*x)*gamma(1.0_r8-x))
+      gam=pi/(sin(pi*x)*custom_gamma(1.0_r8-x))
     ELSEIF ((abs(k-x)<dw).AND.(x<21.0_r8)) THEN
       gam=1;
       DO n=2,k1 
@@ -192,14 +192,14 @@
       ENDIF
       k1=3-k;
       z=k1+x;
-      gam=gamma(z);
+      gam=custom_gamma(z);
       DO n=1,k1 
         gam=gam/(z-n)
       ENDDO
     ELSE
       gam=sqrttwopi*exp(-x+(x-0.5_r8)*log(x)+stirling(x))
     ENDIF
-    END FUNCTION gamma
+    END FUNCTION custom_gamma
 
     FUNCTION loggam(x)
     !------------------------------------
@@ -239,7 +239,7 @@
     IF (x>=3.0_r8) THEN
       gamstar=exp(stirling(x))
     ELSEIF (x>0.0_r8) THEN
-      gamstar=gamma(x)/(exp(-x+(x-0.5_r8)*log(x))*sqrttwopi)
+      gamstar=custom_gamma(x)/(exp(-x+(x-0.5_r8)*log(x))*sqrttwopi)
     ELSE
       gamstar=giant
     ENDIF
@@ -280,7 +280,7 @@
     REAL(r8) :: qratio,x,y
     REAL(r8) :: b, c, q
     IF (((x<=0.0_r8).OR.(y<=0.0_r8)).OR.(y>1.5_r8*x)) THEN
-      qratio=gamma(x)/gamma(y)
+      qratio=custom_gamma(x)/custom_gamma(y)
     ELSE
       b=y-x;
       c=b/x;
@@ -691,7 +691,7 @@
     END FUNCTION xminsinx
         
   
-    RECURSIVE FUNCTION sinh(x,eps) RESULT(sinhh)
+    RECURSIVE FUNCTION custom_sinh(x,eps) RESULT(sinhh)
     USE Someconstants  
     IMPLICIT NONE
     !to compute hyperbolic function sinh (x)}
@@ -716,14 +716,14 @@
       END DO
       y=x*y
     ELSEIF (ax<0.36_r8) THEN
-      t=sinh(x*0.333333333333333333333333333333_r8,eps);
+      t=custom_sinh(x*0.333333333333333333333333333333_r8,eps);
       y=t*(3.0_r8+4.0_r8*t*t);
     ELSE
       t=exp(x);
       y=(t-1.0_r8/t)*0.5_r8
     ENDIF
     sinhh=y
-    END FUNCTION sinh
+    END FUNCTION custom_sinh
 
     FUNCTION exmin1(x,eps)
     USE Someconstants  
@@ -737,7 +737,7 @@
       y=(exp(x)-1.0_r8)/x
     ELSE
       t=x*0.5_r8;
-      y=exp(t)*sinh(t,eps)/t
+      y=exp(t)*custom_sinh(t,eps)/t
     ENDIF
     exmin1=y
     END FUNCTION exmin1
@@ -753,7 +753,7 @@
     ELSEIF (abs(x)>0.9_r8) THEN
       y=(exp(x)-1.0_r8-x)/(x*x*0.5_r8)
     ELSE
-      t=sinh(x*0.5_r8,eps);
+      t=custom_sinh(x*0.5_r8,eps);
       t2=t*t;
       y=(2*t2+(2.0_r8*t*sqrt(1.0_r8+t2)-x))/(x*x*0.5_r8)
     ENDIF
@@ -816,7 +816,7 @@
       dompart=dp
     ELSE
       IF (a<8.0_r8) THEN
-        dompart=exp(a*lnx-x)/gamma(a+1.0_r8)
+        dompart=exp(a*lnx-x)/custom_gamma(a+1.0_r8)
       ELSE
         dompart=1.0_r8/(sqrt(a*twopi)*gamstar(a))
         lambda=x/a

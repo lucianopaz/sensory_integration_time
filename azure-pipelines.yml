@@ -55,7 +55,7 @@ steps:
     then
       conda install --yes --name test_env -c anaconda gfortran_osx-64
     else
-      conda install --yes --name test_env -c msys2 m2w64-gcc-fortran
+      conda install --yes --name test_env -c msys2 m2w64-toolchain
     fi
     ./scripts/add_env_vars.sh -n test_env
   displayName: 'Create Anaconda environment with GSL libraries and gfortran'
