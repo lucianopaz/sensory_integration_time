@@ -28,33 +28,21 @@ REQUIREMENTS_FILE = os.path.join(PROJECT_ROOT, "requirements.txt")
 README_FILE = os.path.join(PROJECT_ROOT, "README.md")
 SOURCE_FILE_PATH = os.path.join("sensory_integration_time", "src")
 
-#extra_compile_args = [
-#    "-I{}".format(d) for d in list(
-#        set(
-#            os.environ.get("C_INCLUDE_PATH", "").split(":") +
-#            os.environ.get("CPLUS_INCLUDE_PATH", "").split(":")
-#        )
-#    ) if d
-#]
-#extra_link_args = [
-#    "-L{}".format(d) for d in list(
-#        set(
-#            os.environ.get("LD_LIBRARY_PATH", "").split(":") +
-#            os.environ.get("DYLD_LIBRARY_PATH", "").split(":")
-#        )
-#    ) if d
-#]
+if os.name == "nt":
+    sep = ";"
+else:
+    sep = ":"
 include_dirs = [
     d for d in list(
         set(
-            os.environ.get("GSL_HEADER_DIRECTORY", "").split(":")
+            os.environ.get("GSL_HEADER_DIRECTORY", "").split(sep)
         )
     ) if d
 ]
 library_dirs = [
     d for d in list(
         set(
-            os.environ.get("GSL_LIBRARY_DIRECTORY", "").split(":")
+            os.environ.get("GSL_LIBRARY_DIRECTORY", "").split(sep)
         )
     ) if d
 ]
