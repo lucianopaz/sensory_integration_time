@@ -70,9 +70,8 @@ steps:
 
 - script: |
     choco install cygwin --params="/InstallDir:$(System.Workfolder)\cygwin"
-    $(System.Workfolder)\cygwin\setup-x86_64.exe -qnNdO -R "$(System.Workfolder)\cygwin" -s "http://cygwin.mirror.constant.com" -g -P ^
-    gcc-fortran,^
-    gsl
+    choco install cyg-get
+    cyg-get install gcc-fortran gsl
     set PATH=$(System.Workfolder)\cygwin\bin;%PATH%
     set GSL_HEADER_DIRECTORY=$(System.Workfolder)\cygwin\include
     set GSL_LIBRARY_DIRECTORY=$(System.Workfolder)\cygwin\lib
