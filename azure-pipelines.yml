@@ -73,12 +73,15 @@ steps:
     choco install cyg-get
     cyg-get install libgsl-devel
     set PATH=$(System.Workfolder)\cygwin\bin;%PATH%
-    set GSL_HEADER_DIRECTORY=$(System.Workfolder)\cygwin\usr\include
-    set GSL_LIBRARY_DIRECTORY=$(System.Workfolder)\cygwin\usr\lib
   displayName: 'Install compilers and libraries on windows'
   condition: eq(variables.imageName, 'windows-latest')
 
-- script: |
+- bash: |
+    if [[ $(variable.imageName == 'windows ')]]
+    then
+      export GSL_HEADER_DIRECTORY=$(System.Workfolder)\cygwin\usr\include
+      export GSL_LIBRARY_DIRECTORY=$(System.Workfolder)\cygwin\usr\lib
+    fi
     pip --no-cache-dir install -r requirements.txt
     pip --no-cache-dir --verbose install .
   displayName: 'Install dependencies and package'
