@@ -71,7 +71,6 @@ steps:
     gcc-fortran,^
     gsl
     set PATH=$(System.Workfolder)\cygwin\bin;%PATH%
-  displayName: Install Dependencies
   displayName: 'Install compilers and libraries on windows'
   condition: eq(variables.imageName, 'windows-latest')
 
