@@ -48,41 +48,39 @@ steps:
     versionSpec: '$(python.version)'
   displayName: 'Use Python $(python.version)'
 
-- bash: echo "##vso[task.prependpath]$CONDA/bin"
-  displayName: 'Add conda to PATH on unix'
-  condition: ne(variables.imageName, 'windows-latest')
+- bash: sudo apt-get -y install gcc gfortran gsl
+  displayName: 'Install compilers and libraries on ubuntu'
+  condition: eq(variables.imageName, 'ubuntu-latest')
 
-# On Hosted macOS, the agent user doesn't have ownership of Miniconda's installation directory/
-# We need to take ownership if we want to update conda or install packages globally
-- bash: sudo chown -R $USER $CONDA
-  displayName: 'Take ownership of conda installation'
+  # Taken from numpy azure-pipelines.yml
+- script: |
+    /bin/bash -c "sudo xcode-select -s /Applications/Xcode_10.app/Contents/Developer"
+    brew install gcc49 gsl
+    # manually link critical gfortran libraries
+    ln -s /usr/local/Cellar/gcc@4.9/4.9.4_1/lib/gcc/4.9/libgfortran.3.dylib /usr/local/lib/libgfortran.3.dylib
+    ln -s /usr/local/Cellar/gcc@4.9/4.9.4_1/lib/gcc/4.9/libquadmath.0.dylib /usr/local/lib/libquadmath.0.dylib
+    # manually symlink gfortran-4.9 to plain gfortran
+    # for f2py
+    ln -s /usr/local/bin/gfortran-4.9 /usr/local/bin/gfortran
+  displayName: 'Install compilers and libraries on mac'
   condition: eq(variables.imageName, 'macos-latest')
 
-- powershell: Write-Host "##vso[task.prependpath]$env:CONDA\Scripts"
-  displayName: 'Add conda to PATH on windows'
+- script: |
+    choco install cygwin --params="/InstallDir:$(System.Workfolder)\cygwin"
+    $(System.Workfolder)\cygwin\setup-x86_64.exe -qnNdO -R "$(System.Workfolder)\cygwin" -s "http://cygwin.mirror.constant.com" -g -P ^
+    gcc-fortran,^
+    gsl
+    set PATH=$(System.Workfolder)\cygwin\bin;%PATH%
+  displayName: Install Dependencies
+  displayName: 'Install compilers and libraries on windows'
   condition: eq(variables.imageName, 'windows-latest')
 
-- bash: |
-    conda update --yes conda
-    conda create --yes --name test_env gsl
-  displayName: 'Create Anaconda environment with GSL libraries and gfortran'
-
-- bash: |
-    source activate test_env
+- script: |
     pip --no-cache-dir --verbose install -r requirements.txt
-    if [[ $(imageName) == 'windows-latest' ]]
-    then
-      set GSL_HEADER_DIRECTORY=$CONDA_PREFIX\\include
-      set GSL_LIBRARY_DIRECTORY=$CONDA_PREFIX\\lib
-    else
-      export GSL_HEADER_DIRECTORY=$CONDA_PREFIX/include
-      export GSL_LIBRARY_DIRECTORY=$CONDA_PREFIX/lib
-    fi
     pip --no-cache-dir --verbose install .
   displayName: 'Install dependencies and package'
 
-- bash: |
-    source activate test_env
+- script: |
     pip install -r requirements-dev.txt
     python -m pytest -v --cov sensory_integration_time --junitxml=junit/test-results.xml --cov-report xml --cov-report term --cov-report html .
   displayName: 'pytest'
