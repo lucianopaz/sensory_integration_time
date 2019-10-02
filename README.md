@@ -5,30 +5,25 @@ This package constains the source code used to fit the leaky integration model f
 
 ## Installation
 
-This package contains some custom c extensions that require the `gfortran` compiler and some libraries. In particular it requires the GNU scientific library (GSL) be installed and available in the build environment.
+This package contains a custom c extension that uses a fortran library (fortran source codes are included in this package). In order to install, your system must have
+1. A fortran compiler
+2. The GNU scientific library (GSL) must be installed and available in the build environment.
 
-There are two ways of installing this package. The first one relies on conda to get the required libraries and compilers. As this code is not provide as a conda build recipe we ship a custom `install.sh` bash script to simplify the installation. Simply use
-
-```bash
-./script/install.sh
-```
-
-If you want to install the package within some conda environment use
+Once you have those, you should be able to simply install this package by downloading its source code and running
 
 ```bash
-./script/install.sh -n conda_environment_name
+pip install path_to_downloaded_package
 ```
 
-If you want to install the package in development mode (changes made to the python source code will have an immediate impact without having to reinstall) use
+To try to install everything in a single go, you can try to use `conda` like this:
 
-```bash
-./script/install.sh -d
+```
+conda create -n env_name python=3.7 gsl some_fortran_compiler_or_toolchain
+./scripts/add_env_vars.sh -n env_name
+conda activate env_name
+pip install -r path_to_downloaded_package/requirements.txt
+pip install path_to_downloaded_package
 ```
 
-The second way of installing this package is by doing all of the work manually.
+Beware that `conda` can mess up pip on macos, the fortran compilers on windows are in non-default channels and once gsl is installed, its headers and lib directories are not added to environment variable. The bash script `add_env_vars.sh`, attempts to solve the last problem mentioned, the rest is up to you...
 
-1. Install `make` and `gfortran`.
-2. Install the gsl libraries and make sure they are available in the `$LD_LIBRAY_PATH` or `$DYLD_LIBRARY_PATH`, and also that the respective header files are includable.
-3. Download the package into a folder and `cd` into it.
-4. Install the python requirements with `pip install -r requirements.txt`
-5. Run either `python setup.py install` or `pip install .` or `pip install -e .` to install the `leakyIntegrator` package.
