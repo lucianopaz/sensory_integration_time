@@ -11,26 +11,43 @@ strategy:
     Python37-ubuntu:
       python.version: '3.7'
       imageName: 'ubuntu-latest'
+      conda.channel: 'anaconda'
+      conda.compiler: 'gfortran_linux-64'
     Python37-Windows:
       python.version: '3.7'
       imageName: 'windows-latest'
+      conda.channel: 'msys2'
+      conda.compiler: 'm2w64-toolchain'
     Python37-MacOS:
       python.version: '3.7'
       imageName: 'macos-latest'
+      conda.channel: 'anaconda'
+      conda.compiler: 'gfortran_osx-64'
     Python27-ubuntu:
       python.version: '2.7'
       imageName: 'ubuntu-latest'
+      conda.channel: 'anaconda'
+      conda.compiler: 'gfortran_linux-64'
     Python27-Windows:
       python.version: '2.7'
       imageName: 'windows-latest'
+      conda.channel: 'msys2'
+      conda.compiler: 'm2w64-toolchain'
     Python27-MacOS:
       python.version: '2.7'
       imageName: 'macos-latest'
+      conda.channel: 'anaconda'
+      conda.compiler: 'gfortran_osx-64'
 
 pool:
   vmImage: $(imageName)
 
 steps:
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '$(python.version)'
+  displayName: 'Use Python $(python.version)'
+
 - bash: echo "##vso[task.prependpath]$CONDA/bin"
   displayName: 'Add conda to PATH on unix'
   condition: ne(variables.imageName, 'windows-latest')
@@ -48,15 +65,7 @@ steps:
 - bash: |
     conda update --yes conda
     conda create --yes --name test_env python=$(python.version) gsl
-    if [[ $(imageName) == "ubuntu-latest" ]]
-    then
-      conda install --yes --name test_env -c anaconda gfortran_linux-64
-    elif [[ $(imageName) == "macos-latest" ]]
-    then
-      conda install --yes --name test_env -c anaconda gfortran_osx-64
-    else
-      conda install --yes --name test_env -c msys2 m2w64-toolchain
-    fi
+    conda install --yes --name test_env -c $(conda.channel) $(conda.compiler)
     ./scripts/add_env_vars.sh -n test_env
   displayName: 'Create Anaconda environment with GSL libraries and gfortran'
 

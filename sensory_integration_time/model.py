@@ -24,7 +24,14 @@ try:
     from .leaky_integral_calculator import lowergamma as lowergamma
     from .leaky_integral_calculator import uppergamma as uppergamma
     _c_api_available = True
-except:
+except Exception as e:
+    import traceback, sys
+    exc_info = sys.exc_info()
+    try:
+        traceback.print_tb(e.__traceback__)
+    except Exception:
+        traceback.print_exception(*exc_info)
+    del exc_info
     warnings.warn("Unable to import the optimized c extension for the leaky integration! Runs will be significantly slower.", ImportWarning)
     _c_api_available = False
     from mpmath import gammainc as mpmath_gammainc
