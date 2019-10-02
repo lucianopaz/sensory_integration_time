@@ -48,7 +48,7 @@ steps:
     versionSpec: '$(python.version)'
   displayName: 'Use Python $(python.version)'
 
-- bash: sudo apt-get -y install gcc gfortran gsl
+- bash: sudo apt-get -y install gcc gfortran libgsl-dev
   displayName: 'Install compilers and libraries on ubuntu'
   condition: eq(variables.imageName, 'ubuntu-latest')
 
