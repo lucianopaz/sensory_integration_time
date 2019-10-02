@@ -55,17 +55,14 @@ steps:
   # Taken from numpy azure-pipelines.yml
 - script: |
     /bin/bash -c "sudo xcode-select -s /Applications/Xcode_10.app/Contents/Developer"
-    brew install gcc49 gsl gfortran
+    brew install gcc49 gsl
     # manually link critical gfortran libraries
+    ls /usr/local/Cellar/
+    ls /usr/local/Cellar/gcc@4.9/4.9.4_1/lib/gcc/4.9/
     ln -s /usr/local/Cellar/gcc@4.9/4.9.4_1/lib/gcc/4.9/libgfortran.3.dylib /usr/local/lib/libgfortran.3.dylib
     ln -s /usr/local/Cellar/gcc@4.9/4.9.4_1/lib/gcc/4.9/libquadmath.0.dylib /usr/local/lib/libquadmath.0.dylib
-    ls /usr/local/Cellar/
-    ls /usr/local/Cellar/gfortran/
-    ls /usr/local/Cellar/gfortran/4.9.4_1
-    ls /usr/local/Cellar/gfortran/4.9.4_1/lib
-    ln -s /usr/local/Cellar/gfortran/4.9.4_1/gfortran/lib/libgfortran.a /usr/local/lib/libgfortran.a
-    ln -s /usr/local/Cellar/gfortran/4.9.4_1/gfortran/lib/libgcc_ext.*.dylib /usr/local/lib/libgcc_ext.10.5.dylib
-    ln -s /usr/local/Cellar/gfortran/4.9.4_1/gfortran/lib/libquadmath.a /usr/local/lib/libquadmath.a
+    ln -s /usr/local/Cellar/gcc@4.9/4.9.4_1/lib/gcc/4.9/libgfortran.a /usr/local/lib/libgfortran.a
+    ln -s /usr/local/Cellar/gcc@4.9/4.9.4_1/lib/gcc/4.9/libquadmath.a /usr/local/lib/libquadmath.a
     # manually symlink gfortran-4.9 to plain gfortran
     # for f2py
     ln -s /usr/local/bin/gfortran-4.9 /usr/local/bin/gfortran
