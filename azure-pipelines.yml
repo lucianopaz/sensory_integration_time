@@ -57,8 +57,6 @@ steps:
     /bin/bash -c "sudo xcode-select -s /Applications/Xcode_10.app/Contents/Developer"
     brew install gcc49 gsl
     # manually link critical gfortran libraries
-    ls /usr/local/Cellar/
-    ls /usr/local/Cellar/gcc@4.9/4.9.4_1/lib/gcc/4.9/
     ln -s /usr/local/Cellar/gcc@4.9/4.9.4_1/lib/gcc/4.9/libgfortran.3.dylib /usr/local/lib/libgfortran.3.dylib
     ln -s /usr/local/Cellar/gcc@4.9/4.9.4_1/lib/gcc/4.9/libquadmath.0.dylib /usr/local/lib/libquadmath.0.dylib
     ln -s /usr/local/Cellar/gcc@4.9/4.9.4_1/lib/gcc/4.9/libgfortran.a /usr/local/lib/libgfortran.a
@@ -66,6 +64,7 @@ steps:
     # manually symlink gfortran-4.9 to plain gfortran
     # for f2py
     ln -s /usr/local/bin/gfortran-4.9 /usr/local/bin/gfortran
+    ls /usr/local/Cellar/gsl/2.6/ | echo
   displayName: 'Install compilers and libraries on mac'
   condition: eq(variables.imageName, 'macos-latest')
 
@@ -81,7 +80,7 @@ steps:
   condition: eq(variables.imageName, 'windows-latest')
 
 - script: |
-    pip --no-cache-dir --verbose install -r requirements.txt
+    pip --no-cache-dir install -r requirements.txt
     pip --no-cache-dir --verbose install .
   displayName: 'Install dependencies and package'
 

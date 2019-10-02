@@ -103,7 +103,7 @@ def configuration():
         ],
         include_dirs=include_dirs,
         library_dirs=library_dirs,
-        extra_link_args=["-l:libincgamNEG.a"]
+        extra_link_args=["-lincgamNEG"]
     )
     return config
 
