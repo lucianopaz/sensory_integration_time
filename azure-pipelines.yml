@@ -64,15 +64,21 @@ steps:
 
 - bash: |
     conda update --yes conda
-    conda create --yes --name test_env python=$(python.version) gsl
-    conda install --yes --name test_env -c $(conda.channel) $(conda.compiler)
-    ./scripts/add_env_vars.sh -n test_env
+    conda create --yes --name test_env gsl
   displayName: 'Create Anaconda environment with GSL libraries and gfortran'
 
 - bash: |
     source activate test_env
-    pip install -r requirements.txt
-    pip install .
+    pip --no-cache-dir --verbose install -r requirements.txt
+    if [[ $(imageName) == 'windows-latest' ]]
+    then
+      set GSL_HEADER_DIRECTORY=$CONDA_PREFIX\\include
+      set GSL_LIBRARY_DIRECTORY=$CONDA_PREFIX\\lib
+    else
+      export GSL_HEADER_DIRECTORY=$CONDA_PREFIX/include
+      export GSL_LIBRARY_DIRECTORY=$CONDA_PREFIX/lib
+    fi
+    pip --no-cache-dir --verbose install .
   displayName: 'Install dependencies and package'
 
 - bash: |

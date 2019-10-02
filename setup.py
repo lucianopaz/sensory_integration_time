@@ -47,16 +47,14 @@ SOURCE_FILE_PATH = os.path.join("sensory_integration_time", "src")
 include_dirs = [
     d for d in list(
         set(
-            os.environ.get("C_INCLUDE_PATH", "").split(":") +
-            os.environ.get("CPLUS_INCLUDE_PATH", "").split(":")
+            os.environ.get("GSL_HEADER_DIRECTORY", "").split(":")
         )
     ) if d
 ]
 library_dirs = [
     d for d in list(
         set(
-            os.environ.get("LD_LIBRARY_PATH", "").split(":") +
-            os.environ.get("DYLD_LIBRARY_PATH", "").split(":")
+            os.environ.get("GSL_LIBRARY_DIRECTORY", "").split(":")
         )
     ) if d
 ]
@@ -115,6 +113,7 @@ def configuration():
             "gslcblas",
             "quadmath",
         ],
+        include_dirs=include_dirs,
         library_dirs=library_dirs,
         extra_link_args=["-l:libincgamNEG.a"]
     )
