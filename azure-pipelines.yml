@@ -71,10 +71,10 @@ steps:
 - script: |
     choco install cygwin --params="/InstallDir:$(System.Workfolder)\cygwin"
     choco install cyg-get
-    cyg-get install gcc-fortran gsl
+    cyg-get install libgsl-devel
     set PATH=$(System.Workfolder)\cygwin\bin;%PATH%
-    set GSL_HEADER_DIRECTORY=$(System.Workfolder)\cygwin\include
-    set GSL_LIBRARY_DIRECTORY=$(System.Workfolder)\cygwin\lib
+    set GSL_HEADER_DIRECTORY=$(System.Workfolder)\cygwin\usr\include
+    set GSL_LIBRARY_DIRECTORY=$(System.Workfolder)\cygwin\usr\lib
   displayName: 'Install compilers and libraries on windows'
   condition: eq(variables.imageName, 'windows-latest')
 
