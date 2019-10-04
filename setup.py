@@ -19,6 +19,7 @@ import os
 import codecs
 import re
 import setuptools
+from numpy import distutils
 from numpy.distutils.misc_util import Configuration
 import sys
 
@@ -46,6 +47,14 @@ library_dirs = [
         )
     ) if d
 ]
+if len(include_dirs) > 0:
+    distutils.log.info(
+        "Adding the following include dirs for GSL= {}".format(include_dirs)
+    )
+if len(library_dirs) > 0:
+    distutils.log.info(
+        "Adding the following library dirs for GSL = {}".format(library_dirs)
+    )
 
 
 description = "Leaky Integration underlying tactile perception interface for fitting and prediction"
