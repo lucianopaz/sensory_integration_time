@@ -72,12 +72,16 @@ steps:
     choco install cygwin --params="/InstallDir:$(System.Workfolder)\cygwin"
     choco install cyg-get
     cyg-get install libgsl-devel
-    set PATH=$(System.Workfolder)\cygwin\bin;%PATH%
+    IF "%PATH%"=="" (
+      set PATH=$(System.Workfolder)\cygwin\bin
+    ) else (
+      set PATH=%PATH%;$(System.Workfolder)\cygwin\bin;%PATH%
+    )
   displayName: 'Install compilers and libraries on windows'
   condition: eq(variables.imageName, 'windows-latest')
 
 - bash: |
-    if [[ $(variable.imageName == 'windows ')]]
+    if [[ $(variable.imageName) == 'windows ']]
     then
       export GSL_HEADER_DIRECTORY=$(System.Workfolder)\cygwin\usr\include
       export GSL_LIBRARY_DIRECTORY=$(System.Workfolder)\cygwin\usr\lib
