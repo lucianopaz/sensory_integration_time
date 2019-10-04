@@ -81,7 +81,7 @@ steps:
   condition: eq(variables.imageName, 'windows-latest')
 
 - bash: |
-    if [[ $(variable.imageName) == 'windows ']]
+    if [[ $(variable.imageName) == 'windows' ]]
     then
       export GSL_HEADER_DIRECTORY=$(System.Workfolder)\cygwin\usr\include
       export GSL_LIBRARY_DIRECTORY=$(System.Workfolder)\cygwin\usr\lib

@@ -3,7 +3,7 @@
 set -ex
 
 # Parse input
-usage() { echo "Usage: $0 [-n conda environment onto which install] [-d flag to indicate whether to install the package in pip development mode]" 1>&2; exit 1; }
+usage() { echo "Usage: $0 [-n conda environment that must be modified]" 1>&2; exit 1; }
 TARGET_ENV=$CONDA_DEFAULT_ENV
 
 while getopts ":n:" o; do
